@@ -2,38 +2,38 @@ import 'package:flutter/material.dart';
 import '../serverRequests/dataRequests.dart';
 import '../billPageComponents/billContainer.dart';
 
-class MostRecentBills extends StatefulWidget {
+class MostRecentVotesMain extends StatefulWidget {
   @override
-  _MostRecentBillsState createState() => _MostRecentBillsState();
+  _MostRecentVotesMainState createState() => _MostRecentVotesMainState();
 }
 
-class _MostRecentBillsState extends State<MostRecentBills> {
+class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
   final requestTools = Requests();
   List bills;
-  bool loading;
-  _MostRecentBillsState() {
+  bool loading = true;
+  bool error = false;
+  _MostRecentVotesMainState() {
     initializePage();
   }
   initializePage() async {
     try {
-      final billList = await this.requestTools.mostRecentBills();
-      setState(() {
-        this.bills = billList;
-      });
+      final billList = await requestTools.mostRecentVotesBills();
+      this.bills = billList['body'];
+      loading = false;
+      this.setState(() {});
     } catch (err) {
-      print('Failure to Init most recent bills page');
+      print('failure to initialize most recent votes $err');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (this.bills == null) {
+    if (loading == true) {
       return Text('Loading...');
     } else {
       return ListView.builder(
           itemCount: bills.length,
           itemBuilder: (context, index) {
-            // print(this.localCongMen[1][index]);
             if (index == 0) {
               return Column(
                 children: [
@@ -44,18 +44,17 @@ class _MostRecentBillsState extends State<MostRecentBills> {
                     decoration: BoxDecoration(
                         color: Color(0xff0040ad),
                         borderRadius: BorderRadius.circular(10)),
-                    child: Text('Bills By Latest Acts',
+                    child: Text('Bills By Latest Votes',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 20)),
                   ),
                   BillExpandableContainer(
-                      data: bills[index], middleText: 'Action')
+                      data: bills[index], middleText: 'Vote')
                 ],
               );
             }
-            // index -= 1;
             return BillExpandableContainer(
-                data: bills[index], middleText: 'Action');
+                data: bills[index], middleText: 'Vote');
           });
     }
   }

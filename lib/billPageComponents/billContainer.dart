@@ -7,20 +7,23 @@ import './ExpandedContent.dart';
 import './billContainerHeader.dart';
 
 class BillExpandableContainer extends StatefulWidget {
-  BillExpandableContainer({@required this.data});
+  BillExpandableContainer({@required this.data, @required this.middleText});
   final Map data;
+  final String middleText;
   @override
-  _BillExpandableContainerState createState() =>
-      _BillExpandableContainerState(data: this.data);
+  _BillExpandableContainerState createState() => _BillExpandableContainerState(
+      data: this.data, middleText: this.middleText);
 }
 
 class _BillExpandableContainerState extends State<BillExpandableContainer> {
   final request = Requests();
   final Map data;
+  final String middleText;
   Map expandedContent;
   bool expanded = false;
   bool loading = false;
-  _BillExpandableContainerState({@required this.data});
+  _BillExpandableContainerState(
+      {@required this.data, @required this.middleText});
   expandBillInfo() async {
     try {
       if (this.expanded == false) {
@@ -50,7 +53,7 @@ class _BillExpandableContainerState extends State<BillExpandableContainer> {
     double cWidth = MediaQuery.of(context).size.width;
     return Container(
       width: cWidth,
-      margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+      margin: EdgeInsets.fromLTRB(5, 10, 5, 0),
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -68,7 +71,7 @@ class _BillExpandableContainerState extends State<BillExpandableContainer> {
           BillTitle(
             text: data['title'],
           ),
-          Text("Action",
+          Text(this.middleText != null ? this.middleText : '',
               style: TextStyle(
                   fontSize: 20, decoration: TextDecoration.underline)),
           BillTitle(text: data['description']),

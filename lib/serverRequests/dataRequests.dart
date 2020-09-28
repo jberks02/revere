@@ -10,8 +10,10 @@ class Requests extends UserInformation {
   String congressmenOutOfStateUrl =
       'http://localhost:8080/Vigil/member/congressmen/other';
   String mostRecentlyActedOnBills =
-      'http://localhost:8080/Vigil/member/bills/mostrecent';
+      'http://localhost:8080/Vigil/member/bills/mostrecent/mostrecent';
   String billDetailsUrl = "http://localhost:8080/Vigil/member/bills/details";
+  String mostRecentlyVotedBills =
+      "http://localhost:8080/Vigil/member/bills/mostRecentVotes/mostrecent";
   Requests() {
     this.validateCookie();
   }
@@ -108,6 +110,32 @@ class Requests extends UserInformation {
       }
     } catch (err) {
       print('Failure to get complete bill details: $err');
+    }
+  }
+
+  mostRecentVotesBills() async {
+    try {
+      bool cookieReady = await this.validateCookie();
+      if (cookieReady == true) {
+        final billVotes = await req.get(this.mostRecentlyVotedBills, headers: {
+          "Content-Type": "application/json",
+          "cookie": this.cookie
+        });
+        if (billVotes.statusCode == 200) {
+          final Map votes = json.decode(billVotes.body);
+          return votes;
+        } else {
+          print(
+              "Request for bill votes came back with a bad status code: ${billVotes.statusCode} ${billVotes.body}");
+          if (billVotes.statusCode == 403) {
+            print('place to go to login');
+          }
+        }
+      } else {
+        return false;
+      }
+    } catch (err) {
+      print('Failure to get most recent Vote bills: $err');
     }
   }
 

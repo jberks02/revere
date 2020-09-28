@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ActionPopup extends StatelessWidget {
-  ActionPopup({@required this.data});
+class VotePopUp extends StatelessWidget {
+  VotePopUp({@required this.data});
   final List data;
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class ActionPopup extends StatelessWidget {
         )
       ],
       title: Text(
-        "Actions",
+        "Votes",
         textAlign: TextAlign.center,
       ),
       content: Container(
@@ -36,24 +36,31 @@ class ActionPopup extends StatelessWidget {
                       border: Border.all(width: 1, color: Colors.black)),
                   child: Column(
                     children: <Widget>[
-                      Text("Initiated By: ${det['action_chamber']}"),
+                      Text("Vote Chamber: ${det['vote_chamber']}"),
                       Container(
                         margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Container(
-                                margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                                child: Text("Type: ${det['action_type']}")),
-                            Container(
-                                margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                                child: Text(
-                                    "Date: ${det['action_date'].split('T')[0]}")),
+                            Text("Yes: ${det['yes']}",
+                                style: TextStyle(fontSize: 13)),
+                            Text("No: ${det['no']}",
+                                style: TextStyle(fontSize: 13)),
+                            Text("Didn't Vote: ${det['no_vote']}",
+                                style: TextStyle(fontSize: 13)),
                           ],
                         ),
                       ),
-                      Text(
-                        det['description'],
-                        textAlign: TextAlign.center,
+                      Container(
+                          margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                          child: Text(
+                              'Vote Date: ${det['vote_date'].split('T')[0]}')),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: Text(
+                          det['vote_question'],
+                          textAlign: TextAlign.center,
+                        ),
                       )
                     ],
                   ),

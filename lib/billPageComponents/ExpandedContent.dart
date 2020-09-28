@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:revere/billPageComponents/votesPopUp.dart';
 import 'package:url_launcher/url_launcher.dart';
 import './actionsPopUp.dart';
+import './presStatementPopUp.dart';
 
 class ExpandedContent extends StatelessWidget {
   final Map details;
@@ -16,6 +18,22 @@ class ExpandedContent extends StatelessWidget {
           context: cont,
           builder: (BuildContext context) {
             return ActionPopup(data: details['actions']);
+          });
+    }
+
+    triggerVoteDialog(cont) {
+      showDialog(
+          context: cont,
+          builder: (BuildContext context) {
+            return VotePopUp(data: details['votes']);
+          });
+    }
+
+    triggerPresStatementDialog(cont) {
+      showDialog(
+          context: cont,
+          builder: (BuildContext context) {
+            return PresidentStatementsPopUp(data: details['presStat']);
           });
     }
 
@@ -112,7 +130,7 @@ class ExpandedContent extends StatelessWidget {
                             offset: Offset(1, 4))
                       ]),
                   child: FlatButton(
-                    onPressed: () => {null},
+                    onPressed: () => {triggerVoteDialog(context)},
                     child: Text("$voteLen votes(s)",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 15)),
@@ -136,7 +154,7 @@ class ExpandedContent extends StatelessWidget {
                       offset: Offset(1, 4))
                 ]),
             child: FlatButton(
-                onPressed: () => {null},
+                onPressed: () => {triggerPresStatementDialog(context)},
                 child: Text("$statLen Presidential Statements")),
           )
         ],
