@@ -17,7 +17,7 @@ class DatesRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          TitleDate(date: this.lastAct, title: 'Last Action'),
+          TitleDate(date: this.lastAct, title: 'Action Date'),
           TitleDate(date: this.introDate, title: 'Introduction'),
         ],
       ),

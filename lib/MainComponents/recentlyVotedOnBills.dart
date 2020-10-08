@@ -31,31 +31,34 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
     if (loading == true) {
       return Text('Loading...');
     } else {
-      return ListView.builder(
-          itemCount: bills.length,
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return Column(
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.all(10),
-                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    decoration: BoxDecoration(
-                        color: Color(0xff0040ad),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Text('Bills By Latest Votes',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 20)),
-                  ),
-                  BillExpandableContainer(
-                      data: bills[index], middleText: 'Vote')
-                ],
-              );
-            }
-            return BillExpandableContainer(
-                data: bills[index], middleText: 'Vote');
-          });
+      return Scrollbar(
+        child: ListView.builder(
+            itemCount: bills.length,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Column(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: EdgeInsets.all(10),
+                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      decoration: BoxDecoration(
+                          color: Color(0xff0040ad),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Text('Bills By Latest Votes',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20)),
+                    ),
+                    // BillExpandableContainer(
+                    //     data: bills[index], middleText: 'Vote')
+                  ],
+                );
+              }
+              return Text('thing');
+              // BillExpandableContainer(
+              //     data: bills[index], middleText: 'Vote');
+            }),
+      );
     }
   }
 }

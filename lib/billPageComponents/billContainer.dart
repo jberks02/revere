@@ -12,7 +12,9 @@ class BillExpandableContainer extends StatefulWidget {
   final String middleText;
   @override
   _BillExpandableContainerState createState() => _BillExpandableContainerState(
-      data: this.data, middleText: this.middleText);
+        data: this.data,
+        middleText: this.middleText,
+      );
 }
 
 class _BillExpandableContainerState extends State<BillExpandableContainer> {
@@ -53,7 +55,7 @@ class _BillExpandableContainerState extends State<BillExpandableContainer> {
     double cWidth = MediaQuery.of(context).size.width;
     return Container(
       width: cWidth,
-      margin: EdgeInsets.fromLTRB(5, 10, 5, 0),
+      margin: EdgeInsets.fromLTRB(10, 15, 10, 0),
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -77,7 +79,7 @@ class _BillExpandableContainerState extends State<BillExpandableContainer> {
           BillTitle(text: data['description']),
           DatesRow(
             introDate: data['introduction_date'],
-            lastAct: data['latest_major_action'],
+            lastAct: data['action_date'].split('T')[0],
           ),
           this.expanded == false
               ? Text('')

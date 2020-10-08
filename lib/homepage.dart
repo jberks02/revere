@@ -20,10 +20,10 @@ class _HomePageState extends State<HomePage> {
       return LoginMain(tools: this.tools, pickScreen: setState);
     else if (page == "Vigil")
       return PageView(
-        controller: PageController(initialPage: 2),
+        controller: PageController(initialPage: 0),
         children: <Widget>[
           MainPage(),
-          MostRecentBills(),
+          MostRecentActions(),
           MostRecentVotesMain()
         ],
       );

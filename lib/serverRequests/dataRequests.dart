@@ -10,7 +10,7 @@ class Requests extends UserInformation {
   String congressmenOutOfStateUrl =
       'http://localhost:8080/Vigil/member/congressmen/other';
   String mostRecentlyActedOnBills =
-      'http://localhost:8080/Vigil/member/bills/mostrecent/mostrecent';
+      'http://localhost:8080/Vigil/member/bills/mostRecentActions/';
   String billDetailsUrl = "http://localhost:8080/Vigil/member/bills/details";
   String mostRecentlyVotedBills =
       "http://localhost:8080/Vigil/member/bills/mostRecentVotes/mostrecent";
@@ -41,14 +41,15 @@ class Requests extends UserInformation {
     }
   }
 
-  mostRecentBills() async {
+  mostRecentBills(date) async {
     try {
       bool cookieReady = await validateCookie();
       if (cookieReady == true) {
-        final billList = await req.get(this.mostRecentlyActedOnBills, headers: {
-          'Content-Type': 'application/json',
-          'cookie': this.cookie
-        });
+        final billList = await req.get(this.mostRecentlyActedOnBills + date,
+            headers: {
+              'Content-Type': 'application/json',
+              'cookie': this.cookie
+            });
         if (billList.statusCode == 200) {
           final data = json.decode(billList.body);
           return data['body'];
