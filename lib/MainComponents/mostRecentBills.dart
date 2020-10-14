@@ -38,7 +38,6 @@ class _MostRecentActionsState extends State<MostRecentActions> {
       }
       this.addingToList = false;
       this.setState(() {});
-      print(this.bills.length);
     } catch (err) {
       print('Failure to expand List for infinite scroll $err');
     }

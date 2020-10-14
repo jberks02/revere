@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../serverRequests/dataRequests.dart';
-import '../billPageComponents/billContainer.dart';
+import '../billVotesComponents/votesContainer.dart';
 
 class MostRecentVotesMain extends StatefulWidget {
   @override
@@ -12,17 +12,35 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
   List bills;
   bool loading = true;
   bool error = false;
+  bool addingToList = false;
   _MostRecentVotesMainState() {
     initializePage();
   }
   initializePage() async {
     try {
-      final billList = await requestTools.mostRecentVotesBills();
+      final billList = await requestTools.mostRecentVotesBills('mostrecent');
       this.bills = billList['body'];
       loading = false;
       this.setState(() {});
     } catch (err) {
       print('failure to initialize most recent votes $err');
+    }
+  }
+
+  getNextSeries() async {
+    try {
+      this.addingToList = true;
+      String paramDate = bills[bills.length - 1]['vote_date']
+          .split(',')[0]
+          .replaceAll('/', '-');
+      final addition = await this.requestTools.mostRecentVotesBills(paramDate);
+      for (var ac in addition['body']) {
+        this.bills.add(ac);
+      }
+      this.addingToList = false;
+      this.setState(() {});
+    } catch (err) {
+      print('Error with vote for get next series: $err');
     }
   }
 
@@ -32,9 +50,13 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
       return Text('Loading...');
     } else {
       return Scrollbar(
+        controller: ScrollController(keepScrollOffset: true),
         child: ListView.builder(
             itemCount: bills.length,
             itemBuilder: (context, index) {
+              if (index > bills.length - 6 && addingToList == false) {
+                this.getNextSeries();
+              }
               if (index == 0) {
                 return Column(
                   children: [
@@ -49,14 +71,12 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 20)),
                     ),
-                    // BillExpandableContainer(
-                    //     data: bills[index], middleText: 'Vote')
+                    VotesContainerWithExpandable(data: bills[index])
                   ],
                 );
+              } else {
+                return VotesContainerWithExpandable(data: bills[index]);
               }
-              return Text('thing');
-              // BillExpandableContainer(
-              //     data: bills[index], middleText: 'Vote');
             }),
       );
     }

@@ -13,7 +13,7 @@ class Requests extends UserInformation {
       'http://localhost:8080/Vigil/member/bills/mostRecentActions/';
   String billDetailsUrl = "http://localhost:8080/Vigil/member/bills/details";
   String mostRecentlyVotedBills =
-      "http://localhost:8080/Vigil/member/bills/mostRecentVotes/mostrecent";
+      "http://localhost:8080/Vigil/member/bills/mostRecentVotes/";
   Requests() {
     this.validateCookie();
   }
@@ -114,14 +114,15 @@ class Requests extends UserInformation {
     }
   }
 
-  mostRecentVotesBills() async {
+  mostRecentVotesBills(date) async {
     try {
       bool cookieReady = await this.validateCookie();
       if (cookieReady == true) {
-        final billVotes = await req.get(this.mostRecentlyVotedBills, headers: {
-          "Content-Type": "application/json",
-          "cookie": this.cookie
-        });
+        final billVotes = await req.get(this.mostRecentlyVotedBills + date,
+            headers: {
+              "Content-Type": "application/json",
+              "cookie": this.cookie
+            });
         if (billVotes.statusCode == 200) {
           final Map votes = json.decode(billVotes.body);
           return votes;

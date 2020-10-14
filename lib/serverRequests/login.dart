@@ -57,7 +57,6 @@ class UserInformation {
         }
         return true;
       } else {
-        //TODO: Create a way to flash an error message on a bad login;
         return false;
       }
     } catch (err) {

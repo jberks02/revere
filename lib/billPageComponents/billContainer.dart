@@ -80,6 +80,7 @@ class _BillExpandableContainerState extends State<BillExpandableContainer> {
           DatesRow(
             introDate: data['introduction_date'],
             lastAct: data['action_date'].split('T')[0],
+            lastActHeader: 'Action Date',
           ),
           this.expanded == false
               ? Text('')
