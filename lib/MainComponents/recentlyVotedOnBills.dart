@@ -18,7 +18,9 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
   }
   initializePage() async {
     try {
-      final billList = await requestTools.mostRecentVotesBills('mostrecent');
+      // final billList = await requestTools.mostRecentVotesBills('mostrecent');
+      final billList = await requestTools.requestByUrl(
+          requestTools.mostRecentlyVotedBills, 'mostrecent');
       this.bills = billList['body'];
       loading = false;
       this.setState(() {});

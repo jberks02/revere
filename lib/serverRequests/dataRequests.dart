@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as req;
 import 'dart:convert';
 import './login.dart';
+import './urlClass.dart';
 
 class Requests extends UserInformation {
   String congressmenInfoUrl =
@@ -14,6 +15,9 @@ class Requests extends UserInformation {
   String billDetailsUrl = "http://localhost:8080/Vigil/member/bills/details";
   String mostRecentlyVotedBills =
       "http://localhost:8080/Vigil/member/bills/mostRecentVotes/";
+  String mostRecentPresStatement =
+      "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/";
+  final urlSet = UrlContainer();
   Requests() {
     this.validateCookie();
   }
@@ -138,6 +142,29 @@ class Requests extends UserInformation {
       }
     } catch (err) {
       print('Failure to get most recent Vote bills: $err');
+    }
+  }
+
+  requestByUrl(url, date) async {
+    try {
+      bool cookieReady = await this.validateCookie();
+      if (cookieReady == true) {
+        final dataReq = await req.get(url + date, headers: {
+          "Content-Type": "application/json",
+          "cookie": this.cookie
+        });
+        if (dataReq.statusCode == 200) {
+          final Map dataArr = json.decode(dataReq.body);
+          return dataArr;
+        } else {
+          print(
+              "Failure to get good status code from url request: ${dataReq.body}");
+        }
+      } else {
+        return false;
+      }
+    } catch (err) {
+      print('Failure to process url at validation stage');
     }
   }
 
