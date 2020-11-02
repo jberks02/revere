@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:revere/billPageComponents/votesPopUp.dart';
+import 'package:revere/defaultInfoComponents/votesPopUp.dart';
 import 'package:url_launcher/url_launcher.dart';
-import './actionsPopUp.dart';
-import './presStatementPopUp.dart';
+import '../defaultInfoComponents/actionsPopUp.dart';
+import '../defaultInfoComponents/presStatementPopUp.dart';
 
 class ExpandedContent extends StatelessWidget {
   final Map details;

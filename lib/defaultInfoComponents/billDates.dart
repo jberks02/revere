@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './twoTxtColumn.dart';
+import 'twoTxtColumn.dart';
 
 class DatesRow extends StatelessWidget {
   final String lastAct;

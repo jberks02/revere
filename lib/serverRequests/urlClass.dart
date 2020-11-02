@@ -3,9 +3,16 @@ import 'package:device_info/device_info.dart';
 class UrlContainer {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   bool physicalDevice;
-  Map<String, String> urls;
+  String congressmenInfoUrl;
+  String validateCookieUrl;
+  String congressmenOutOfStateUrl;
+  String mostRecentlyActedOnBills;
+  String billDetailsUrl;
+  String mostRecentlyVotedBills;
+  String mostRecentPresStatement;
   UrlContainer() {
     iosInitStrut();
+    androidInitStrut();
   }
 
   iosInitStrut() async {
@@ -13,37 +20,35 @@ class UrlContainer {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
       physicalDevice = iosInfo.isPhysicalDevice;
       if (this.physicalDevice == false) {
-        this.urls = {
-          'congressmenInfoUrl':
-              'http://localhost:8080/Vigil/member/congressmen/info',
-          'validateCookieUrl':
-              'http://localhost:8080/Vigil/member/validateCookie',
-          'congressmenOutOfStateUrl':
-              'http://localhost:8080/Vigil/member/congressmen/other',
-          'mostRecentlyActedOnBills':
-              'http://localhost:8080/Vigil/member/bills/mostRecentActions/',
-          'billDetailsUrl': "http://localhost:8080/Vigil/member/bills/details",
-          'mostRecentlyVotedBills':
-              "http://localhost:8080/Vigil/member/bills/mostRecentVotes/",
-          'mostRecentPresStatement':
-              "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/",
-        };
+        this.congressmenInfoUrl =
+            'http://localhost:8080/Vigil/member/congressmen/info';
+        this.validateCookieUrl =
+            'http://localhost:8080/Vigil/member/validateCookie';
+        this.congressmenOutOfStateUrl =
+            'http://localhost:8080/Vigil/member/congressmen/other';
+        this.mostRecentlyActedOnBills =
+            'http://localhost:8080/Vigil/member/bills/mostRecentActions/';
+        this.billDetailsUrl =
+            "http://localhost:8080/Vigil/member/bills/details";
+        this.mostRecentlyVotedBills =
+            "http://localhost:8080/Vigil/member/bills/mostRecentVotes/";
+        this.mostRecentPresStatement =
+            "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/";
       } else {
-        this.urls = {
-          'congressmenInfoUrl':
-              'http://localhost:8080/Vigil/member/congressmen/info',
-          'validateCookieUrl':
-              'http://localhost:8080/Vigil/member/validateCookie',
-          'congressmenOutOfStateUrl':
-              'http://localhost:8080/Vigil/member/congressmen/other',
-          'mostRecentlyActedOnBills':
-              'http://localhost:8080/Vigil/member/bills/mostRecentActions/',
-          'billDetailsUrl': "http://localhost:8080/Vigil/member/bills/details",
-          'mostRecentlyVotedBills':
-              "http://localhost:8080/Vigil/member/bills/mostRecentVotes/",
-          'mostRecentPresStatement':
-              "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/",
-        };
+        this.congressmenInfoUrl =
+            'http://192.168.0.2:8080/Vigil/member/congressmen/info';
+        this.validateCookieUrl =
+            'http://192.168.0.2:8080/Vigil/member/validateCookie';
+        this.congressmenOutOfStateUrl =
+            'http://192.168.0.2:8080/Vigil/member/congressmen/other';
+        this.mostRecentlyActedOnBills =
+            'http://192.168.0.2:8080/Vigil/member/bills/mostRecentActions/';
+        this.billDetailsUrl =
+            "http://192.168.0.2:8080/Vigil/member/bills/details";
+        this.mostRecentlyVotedBills =
+            "http://192.168.0.2:8080/Vigil/member/bills/mostRecentVotes/";
+        this.mostRecentPresStatement =
+            "http://192.168.0.2:8080/Vigil/member/bills/mostRecentPresidentialStatement/";
       }
     } catch (err) {
       print('Failure to get IOS device info Attempting Android Init');
@@ -56,41 +61,38 @@ class UrlContainer {
       AndroidDeviceInfo andInfo = await deviceInfo.androidInfo;
       physicalDevice = andInfo.isPhysicalDevice;
       if (this.physicalDevice == false) {
-        this.urls = {
-          'congressmenInfoUrl':
-              'http://localhost:8080/Vigil/member/congressmen/info',
-          'validateCookieUrl':
-              'http://localhost:8080/Vigil/member/validateCookie',
-          'congressmenOutOfStateUrl':
-              'http://localhost:8080/Vigil/member/congressmen/other',
-          'mostRecentlyActedOnBills':
-              'http://localhost:8080/Vigil/member/bills/mostRecentActions/',
-          'billDetailsUrl': "http://localhost:8080/Vigil/member/bills/details",
-          'mostRecentlyVotedBills':
-              "http://localhost:8080/Vigil/member/bills/mostRecentVotes/",
-          'mostRecentPresStatement':
-              "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/",
-        };
+        this.congressmenInfoUrl =
+            'http://localhost:8080/Vigil/member/congressmen/info';
+        this.validateCookieUrl =
+            'http://localhost:8080/Vigil/member/validateCookie';
+        this.congressmenOutOfStateUrl =
+            'http://localhost:8080/Vigil/member/congressmen/other';
+        this.mostRecentlyActedOnBills =
+            'http://localhost:8080/Vigil/member/bills/mostRecentActions/';
+        this.billDetailsUrl =
+            "http://localhost:8080/Vigil/member/bills/details";
+        this.mostRecentlyVotedBills =
+            "http://localhost:8080/Vigil/member/bills/mostRecentVotes/";
+        this.mostRecentPresStatement =
+            "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/";
       } else {
-        this.urls = {
-          'congressmenInfoUrl':
-              'http://localhost:8080/Vigil/member/congressmen/info',
-          'validateCookieUrl':
-              'http://localhost:8080/Vigil/member/validateCookie',
-          'congressmenOutOfStateUrl':
-              'http://localhost:8080/Vigil/member/congressmen/other',
-          'mostRecentlyActedOnBills':
-              'http://localhost:8080/Vigil/member/bills/mostRecentActions/',
-          'billDetailsUrl': "http://localhost:8080/Vigil/member/bills/details",
-          'mostRecentlyVotedBills':
-              "http://localhost:8080/Vigil/member/bills/mostRecentVotes/",
-          'mostRecentPresStatement':
-              "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/",
-        };
-        print(urls);
+        this.congressmenInfoUrl =
+            'http://localhost:8080/Vigil/member/congressmen/info';
+        this.validateCookieUrl =
+            'http://localhost:8080/Vigil/member/validateCookie';
+        this.congressmenOutOfStateUrl =
+            'http://localhost:8080/Vigil/member/congressmen/other';
+        this.mostRecentlyActedOnBills =
+            'http://localhost:8080/Vigil/member/bills/mostRecentActions/';
+        this.billDetailsUrl =
+            "http://localhost:8080/Vigil/member/bills/details";
+        this.mostRecentlyVotedBills =
+            "http://localhost:8080/Vigil/member/bills/mostRecentVotes/";
+        this.mostRecentPresStatement =
+            "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/";
       }
     } catch (err) {
-      print('Failure to get android device info $err');
+      print('Failure to get android device info');
     }
   }
 }

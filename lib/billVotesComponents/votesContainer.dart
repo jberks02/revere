@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:revere/billPageComponents/ExpandedContent.dart';
 import '../billPageComponents/billContainerHeader.dart';
-import '../billPageComponents/billTitle.dart';
-import '../billPageComponents/billDates.dart';
+import '../defaultInfoComponents/billTitle.dart';
+import '../defaultInfoComponents/billDates.dart';
 import '../billPageComponents/ExpandBillInfo.dart';
 import '../serverRequests/dataRequests.dart';
 

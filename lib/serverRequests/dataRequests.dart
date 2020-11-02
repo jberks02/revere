@@ -3,6 +3,8 @@ import 'dart:convert';
 import './login.dart';
 import './urlClass.dart';
 
+final urlSet = UrlContainer();
+
 class Requests extends UserInformation {
   String congressmenInfoUrl =
       'http://localhost:8080/Vigil/member/congressmen/info';
@@ -17,7 +19,6 @@ class Requests extends UserInformation {
       "http://localhost:8080/Vigil/member/bills/mostRecentVotes/";
   String mostRecentPresStatement =
       "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/";
-  final urlSet = UrlContainer();
   Requests() {
     this.validateCookie();
   }

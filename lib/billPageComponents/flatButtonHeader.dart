@@ -14,10 +14,8 @@ class FlatButHeader extends StatelessWidget {
         ),
         Expanded(
           flex: 1,
-          child: Text(
-            'Expand',
-            textAlign: TextAlign.center,
-          ),
+          child: Text('Expand',
+              textAlign: TextAlign.center, style: TextStyle(fontSize: 20)),
         ),
         Expanded(flex: 1, child: icon),
       ],

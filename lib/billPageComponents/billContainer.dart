@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../serverRequests/dataRequests.dart';
-import './billTitle.dart';
-import './billDates.dart';
+import '../defaultInfoComponents/billTitle.dart';
+import '../defaultInfoComponents/billDates.dart';
+import '../defaultInfoComponents/userActions.dart';
 import './ExpandBillInfo.dart';
 import './ExpandedContent.dart';
 import './billContainerHeader.dart';
@@ -65,6 +66,7 @@ class _BillExpandableContainerState extends State<BillExpandableContainer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          UserActions(),
           BillHeader(
             slug: data['bill_slug'],
             enacted: data['enacted'],
