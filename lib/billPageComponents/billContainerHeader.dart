@@ -29,18 +29,18 @@ class BillHeader extends StatelessWidget {
           Expanded(
               flex: 1,
               child: Text(this.enactedMessage(this.enacted),
-                  textAlign: TextAlign.center)),
+                  textAlign: TextAlign.center, style: TextStyle(fontSize: 20))),
           Expanded(
             flex: 1,
             child: Text(this.slug,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 20, decoration: TextDecoration.underline)),
+                    fontSize: 25, decoration: TextDecoration.underline)),
           ),
           Expanded(
               flex: 1,
               child: Text(this.activeMessage(this.active),
-                  textAlign: TextAlign.center))
+                  textAlign: TextAlign.center, style: TextStyle(fontSize: 20)))
         ],
       ),
     );

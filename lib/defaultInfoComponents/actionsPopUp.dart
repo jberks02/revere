@@ -27,6 +27,7 @@ class ActionPopup extends StatelessWidget {
             children: <Widget>[
               for (var det in data)
                 Container(
+                  width: MediaQuery.of(context).size.width,
                   margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
@@ -38,19 +39,15 @@ class ActionPopup extends StatelessWidget {
                       Text("Initiated By: ${det['action_chamber']}"),
                       Container(
                         margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        child: Row(
+                        child: Column(
                           children: <Widget>[
-                            Expanded(
-                              flex: 1,
-                              child: Text("Type: ${det['action_type']}",
-                                  style: TextStyle(fontSize: 13)),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                  "Date: ${det['action_date'].split('T')[0]}",
-                                  style: TextStyle(fontSize: 13)),
-                            )
+                            Container(
+                                margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                child: Text("Type: ${det['action_type']}")),
+                            Container(
+                                margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                child: Text(
+                                    "Date: ${det['action_date'].split('T')[0]}")),
                           ],
                         ),
                       ),

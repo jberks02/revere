@@ -6,6 +6,7 @@ import './MainComponents/signUpPage.dart';
 import './appBarComponents/listDropDown.dart';
 import './appBarComponents/backArrow.dart';
 import './MainComponents/mostRecentBills.dart';
+import './MainComponents/recentlyVotedOnBills.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -21,9 +22,9 @@ class _HomePageState extends State<HomePage> {
       return PageView(
         controller: PageController(initialPage: 2),
         children: <Widget>[
-          LoginMain(tools: this.tools, pickScreen: setState),
           MainPage(),
-          MostRecentBills()
+          MostRecentActions(),
+          MostRecentVotesMain()
         ],
       );
     else if (page == "Sign Up")

@@ -1,6 +1,9 @@
 import 'package:http/http.dart' as req;
 import 'dart:convert';
 import './login.dart';
+import './urlClass.dart';
+
+final urlSet = UrlContainer();
 
 class Requests extends UserInformation {
   String congressmenInfoUrl =
@@ -10,8 +13,12 @@ class Requests extends UserInformation {
   String congressmenOutOfStateUrl =
       'http://localhost:8080/Vigil/member/congressmen/other';
   String mostRecentlyActedOnBills =
-      'http://localhost:8080/Vigil/member/bills/mostrecent';
+      'http://localhost:8080/Vigil/member/bills/mostRecentActions/';
   String billDetailsUrl = "http://localhost:8080/Vigil/member/bills/details";
+  String mostRecentlyVotedBills =
+      "http://localhost:8080/Vigil/member/bills/mostRecentVotes/";
+  String mostRecentPresStatement =
+      "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/";
   Requests() {
     this.validateCookie();
   }
@@ -39,14 +46,15 @@ class Requests extends UserInformation {
     }
   }
 
-  mostRecentBills() async {
+  mostRecentBills(date) async {
     try {
       bool cookieReady = await validateCookie();
       if (cookieReady == true) {
-        final billList = await req.get(this.mostRecentlyActedOnBills, headers: {
-          'Content-Type': 'application/json',
-          'cookie': this.cookie
-        });
+        final billList = await req.get(this.mostRecentlyActedOnBills + date,
+            headers: {
+              'Content-Type': 'application/json',
+              'cookie': this.cookie
+            });
         if (billList.statusCode == 200) {
           final data = json.decode(billList.body);
           return data['body'];
@@ -108,6 +116,56 @@ class Requests extends UserInformation {
       }
     } catch (err) {
       print('Failure to get complete bill details: $err');
+    }
+  }
+
+  mostRecentVotesBills(date) async {
+    try {
+      bool cookieReady = await this.validateCookie();
+      if (cookieReady == true) {
+        final billVotes = await req.get(this.mostRecentlyVotedBills + date,
+            headers: {
+              "Content-Type": "application/json",
+              "cookie": this.cookie
+            });
+        if (billVotes.statusCode == 200) {
+          final Map votes = json.decode(billVotes.body);
+          return votes;
+        } else {
+          print(
+              "Request for bill votes came back with a bad status code: ${billVotes.statusCode} ${billVotes.body}");
+          if (billVotes.statusCode == 403) {
+            print('place to go to login');
+          }
+        }
+      } else {
+        return false;
+      }
+    } catch (err) {
+      print('Failure to get most recent Vote bills: $err');
+    }
+  }
+
+  requestByUrl(url, date) async {
+    try {
+      bool cookieReady = await this.validateCookie();
+      if (cookieReady == true) {
+        final dataReq = await req.get(url + date, headers: {
+          "Content-Type": "application/json",
+          "cookie": this.cookie
+        });
+        if (dataReq.statusCode == 200) {
+          final Map dataArr = json.decode(dataReq.body);
+          return dataArr;
+        } else {
+          print(
+              "Failure to get good status code from url request: ${dataReq.body}");
+        }
+      } else {
+        return false;
+      }
+    } catch (err) {
+      print('Failure to process url at validation stage');
     }
   }
 

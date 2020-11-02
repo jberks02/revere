@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import './twoTxtColumn.dart';
+import 'twoTxtColumn.dart';
 
 class DatesRow extends StatelessWidget {
   final String lastAct;
   final String introDate;
-  DatesRow({
-    @required this.lastAct,
-    @required this.introDate,
-  });
+  final String lastActHeader;
+  DatesRow(
+      {@required this.lastAct,
+      @required this.introDate,
+      @required this.lastActHeader});
   @override
   Widget build(BuildContext context) {
     double cWidth = MediaQuery.of(context).size.width;
@@ -17,7 +18,7 @@ class DatesRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          TitleDate(date: this.lastAct, title: 'Last Action'),
+          TitleDate(date: this.lastAct, title: this.lastActHeader),
           TitleDate(date: this.introDate, title: 'Introduction'),
         ],
       ),

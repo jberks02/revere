@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Color(0xff0A0E21),
         primaryColor: Color(0xff0A0E21),
         accentColor: Color(0xffE99B89B),
-        // buttonColor: Colors.cyan
       ),
     );
   }

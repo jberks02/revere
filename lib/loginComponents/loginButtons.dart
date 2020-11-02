@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
 class LoginButton extends StatelessWidget {
-  LoginButton({@required this.txt, @required this.callback, this.ready});
+  LoginButton(
+      {@required this.txt,
+      @required this.callback,
+      this.ready,
+      this.prevContext});
   final txt;
   final callback;
   final ready;
+  final prevContext;
   colorCheck() =>
       this.ready == null || this.ready == true ? Colors.blue : Colors.grey;
-  void funcCheck() =>
-      this.ready == null || this.ready == true ? this.callback() : null;
+  void funcCheck() => this.ready == null || this.ready == true
+      ? this.callback(prevContext)
+      : null;
   @override
   Widget build(BuildContext context) {
     return Container(

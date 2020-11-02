@@ -1,33 +1,28 @@
 import 'package:flutter/material.dart';
-import '../serverRequests/dataRequests.dart';
+import 'package:revere/billPageComponents/ExpandedContent.dart';
+import '../billPageComponents/billContainerHeader.dart';
 import '../defaultInfoComponents/billTitle.dart';
 import '../defaultInfoComponents/billDates.dart';
-import '../defaultInfoComponents/userActions.dart';
-import './ExpandBillInfo.dart';
-import './ExpandedContent.dart';
-import './billContainerHeader.dart';
+import '../billPageComponents/ExpandBillInfo.dart';
+import '../serverRequests/dataRequests.dart';
 
-class BillExpandableContainer extends StatefulWidget {
-  BillExpandableContainer({@required this.data, @required this.middleText});
-  final Map data;
-  final String middleText;
+class VotesContainerWithExpandable extends StatefulWidget {
   @override
-  _BillExpandableContainerState createState() => _BillExpandableContainerState(
-        data: this.data,
-        middleText: this.middleText,
-      );
+  VotesContainerWithExpandable({@required this.data});
+  final Map data;
+  _VotesContainerWithExpandableState createState() =>
+      _VotesContainerWithExpandableState(data: data);
 }
 
-class _BillExpandableContainerState extends State<BillExpandableContainer> {
+class _VotesContainerWithExpandableState
+    extends State<VotesContainerWithExpandable> {
   final request = Requests();
   final Map data;
-  final String middleText;
-  Map expandedContent;
-  bool expanded = false;
   bool loading = false;
-  _BillExpandableContainerState(
-      {@required this.data, @required this.middleText});
-  expandBillInfo() async {
+  bool expanded = false;
+  Map expandedContent;
+  _VotesContainerWithExpandableState({@required this.data});
+  expandVoteInfo() async {
     try {
       if (this.expanded == false) {
         this.setState(() {
@@ -65,8 +60,7 @@ class _BillExpandableContainerState extends State<BillExpandableContainer> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          UserActions(),
+        children: [
           BillHeader(
             slug: data['bill_slug'],
             enacted: data['enacted'],
@@ -75,22 +69,25 @@ class _BillExpandableContainerState extends State<BillExpandableContainer> {
           BillTitle(
             text: data['title'],
           ),
-          Text(this.middleText != null ? this.middleText : '',
-              style: TextStyle(
-                  fontSize: 20, decoration: TextDecoration.underline)),
-          BillTitle(text: data['description']),
-          DatesRow(
-            introDate: data['introduction_date'],
-            lastAct: data['action_date'].split('T')[0],
-            lastActHeader: 'Action Date',
+          Text(
+            'Vote Question',
+            style:
+                TextStyle(fontSize: 20, decoration: TextDecoration.underline),
           ),
+          BillTitle(
+            text: data['vote_question'],
+          ),
+          DatesRow(
+              introDate: data['introduction_date'].split('T')[0],
+              lastAct: data['vote_date'].split('T')[0],
+              lastActHeader: 'Vote Date'),
           this.expanded == false
               ? Text('')
               : ExpandedContent(details: this.expandedContent['body']),
           ExpandContentButton(
               loading: this.loading,
               expanded: this.expanded,
-              expandContent: this.expandBillInfo)
+              expandContent: this.expandVoteInfo)
         ],
       ),
     );
