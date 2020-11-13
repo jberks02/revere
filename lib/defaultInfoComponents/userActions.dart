@@ -20,7 +20,6 @@ class _UserActionsState extends State<UserActions> {
   bool loading = false;
   // bool
   saveButtonPressed() async {
-    print(this.saved);
     final saveResponse = await saveCall(this.bill_id);
     if (saveResponse == true) {
       setState(() {

@@ -115,7 +115,7 @@ class _MostRecentActionsState extends State<MostRecentActions> {
     } else {
       for (var bill in bills) {
         if (bill['bill_id'] == billToUpdate) {
-          bill.saved = true;
+          bill['saved'] = true;
         }
       }
       setState(() {});
