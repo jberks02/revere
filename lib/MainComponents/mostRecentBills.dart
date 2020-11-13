@@ -108,6 +108,21 @@ class _MostRecentActionsState extends State<MostRecentActions> {
     }
   }
 
+  saveBill(billToUpdate) async {
+    bool save = await this.requestTools.saveBillById(billToUpdate);
+    if (save == false) {
+      return false;
+    } else {
+      for (var bill in bills) {
+        if (bill['bill_id'] == billToUpdate) {
+          bill.saved = true;
+        }
+      }
+      setState(() {});
+      return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (loading == true) {
@@ -139,13 +154,15 @@ class _MostRecentActionsState extends State<MostRecentActions> {
                           style: TextStyle(fontSize: 20)),
                     ),
                     BillExpandableContainer(
-                        data: bills[index], middleText: 'Action')
+                        data: bills[index],
+                        middleText: 'Action',
+                        saveFunc: saveBill)
                   ],
                 );
               }
               // index -= 1;
               return BillExpandableContainer(
-                  data: bills[index], middleText: 'Action');
+                  data: bills[index], middleText: 'Action', saveFunc: saveBill);
             }),
       );
     }

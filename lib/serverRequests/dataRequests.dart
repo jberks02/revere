@@ -3,25 +3,34 @@ import 'dart:convert';
 import './login.dart';
 import './urlClass.dart';
 
-final urlSet = UrlContainer();
-
-class Requests extends UserInformation {
-  String congressmenInfoUrl =
-      'http://localhost:8080/Vigil/member/congressmen/info';
-  String validateCookieUrl =
-      'http://localhost:8080/Vigil/member/validateCookie';
-  String congressmenOutOfStateUrl =
-      'http://localhost:8080/Vigil/member/congressmen/other';
-  String mostRecentlyActedOnBills =
-      'http://localhost:8080/Vigil/member/bills/mostRecentActions/';
-  String billDetailsUrl = "http://localhost:8080/Vigil/member/bills/details";
-  String mostRecentlyVotedBills =
-      "http://localhost:8080/Vigil/member/bills/mostRecentVotes/";
-  String mostRecentPresStatement =
-      "http://localhost:8080/Vigil/member/bills/mostRecentPresidentialStatement/";
+class Requests extends UserInformation with UrlContainer {
   Requests() {
     this.validateCookie();
   }
+  saveBillById(bill) async {
+    try {
+      bool cookieReady = await validateCookie();
+      if (cookieReady == true) {
+        final Map sentData = {'bill': bill};
+        final update = await req.post(this.updateUserFavorite,
+            headers: {'cookie': this.cookie}, body: sentData);
+        if (update.statusCode == 200) {
+          final Map details = json.decode(update.body);
+          if (details['code'] == 200)
+            return true;
+          else
+            return false;
+        } else {
+          return false;
+        }
+      } else
+        return false;
+    } catch (err) {
+      print('Failure to save bill in Requests: $err');
+      return false;
+    }
+  }
+
   requestOutOfStateCongressMen() async {
     try {
       bool cookieReady = await validateCookie();

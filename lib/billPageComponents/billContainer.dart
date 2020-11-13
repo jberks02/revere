@@ -8,25 +8,30 @@ import './ExpandedContent.dart';
 import './billContainerHeader.dart';
 
 class BillExpandableContainer extends StatefulWidget {
-  BillExpandableContainer({@required this.data, @required this.middleText});
+  BillExpandableContainer(
+      {@required this.data,
+      @required this.middleText,
+      @required this.saveFunc});
   final Map data;
   final String middleText;
+  final saveFunc;
   @override
   _BillExpandableContainerState createState() => _BillExpandableContainerState(
-        data: this.data,
-        middleText: this.middleText,
-      );
+      data: this.data, middleText: this.middleText, saveFunc: this.saveFunc);
 }
 
 class _BillExpandableContainerState extends State<BillExpandableContainer> {
   final request = Requests();
   final Map data;
   final String middleText;
+  final saveFunc;
   Map expandedContent;
   bool expanded = false;
   bool loading = false;
   _BillExpandableContainerState(
-      {@required this.data, @required this.middleText});
+      {@required this.data,
+      @required this.middleText,
+      @required this.saveFunc});
   expandBillInfo() async {
     try {
       if (this.expanded == false) {
@@ -66,7 +71,10 @@ class _BillExpandableContainerState extends State<BillExpandableContainer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          UserActions(),
+          UserActions(
+              saved: data['saved'],
+              saveCall: saveFunc,
+              bill_id: data['bill_id']),
           BillHeader(
             slug: data['bill_slug'],
             enacted: data['enacted'],
