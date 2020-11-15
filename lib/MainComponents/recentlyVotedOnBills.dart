@@ -71,10 +71,7 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
 
   void listen() async {
     var prefs = await SharedPreferences.getInstance();
-    double off = prefs.getDouble('votedOffset');
-    if (_controller.offset > off + 25.0 || _controller.offset < off - 25.0) {
-      prefs.setDouble('votedOffset', _controller.offset);
-    }
+    prefs.setDouble('votedOffset', _controller.offset);
   }
 
   getNextSeries() async {
@@ -93,6 +90,47 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
       this.setState(() {});
     } catch (err) {
       print('Error with vote for get next series: $err');
+    }
+  }
+
+  saveBill(billToUpdate) async {
+    try {
+      bool save = await this.requestTools.saveBillById(billToUpdate);
+      if (save == false) {
+        return false;
+      } else {
+        for (var bill in bills) {
+          if (bill['bill_id'] == billToUpdate) {
+            bill['saved'] = true;
+          }
+        }
+        setState(() {});
+        return true;
+      }
+    } catch (err) {
+      print('Failure to save bill: $err');
+      return false;
+    }
+  }
+
+  deleteBill(billToUpdate) async {
+    try {
+      final remove = await this.requestTools.deleteBillFromSave(billToUpdate);
+      print(remove);
+      // if (remove != false) {
+      bills.forEach((bi) {
+        if (bi['bill_id'] == billToUpdate) {
+          bi['saved'] = false;
+        }
+      });
+      setState(() {});
+      return true;
+      // } else {
+      //   return false;
+      // }
+    } catch (err) {
+      print('Failure to delete bill from favorites $err');
+      return false;
     }
   }
 
@@ -124,11 +162,17 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 20)),
                     ),
-                    VotesContainerWithExpandable(data: bills[index])
+                    VotesContainerWithExpandable(
+                        data: bills[index],
+                        saveFunc: saveBill,
+                        deleteFunc: deleteBill)
                   ],
                 );
               } else {
-                return VotesContainerWithExpandable(data: bills[index]);
+                return VotesContainerWithExpandable(
+                    data: bills[index],
+                    saveFunc: saveBill,
+                    deleteFunc: deleteBill);
               }
             }),
       );

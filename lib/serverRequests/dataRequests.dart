@@ -7,6 +7,27 @@ class Requests extends UserInformation with UrlContainer {
   Requests() {
     this.validateCookie();
   }
+  deleteBillFromSave(bill) async {
+    try {
+      bool cookieReady = await validateCookie();
+      if (cookieReady == true) {
+        final Map sentData = {'bill': bill};
+        final update = await req.post(this.deleteUserFavorite,
+            headers: {'cookie': this.cookie}, body: sentData);
+        if (update.statusCode == 200) {
+          return json.decode(update.body);
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } catch (err) {
+      print('failure to delete bill from db by id $err');
+      return false;
+    }
+  }
+
   saveBillById(bill) async {
     try {
       bool cookieReady = await validateCookie();

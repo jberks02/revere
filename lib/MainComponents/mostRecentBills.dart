@@ -39,8 +39,7 @@ class _MostRecentActionsState extends State<MostRecentActions> {
     if (off == null) {
       prefs.setDouble('listIndex', 0.00);
       off = 0.00;
-    }
-    if (_controller.offset > off + 25.0 || _controller.offset < off - 25.0) {
+    } else {
       prefs.setDouble('listIndex', _controller.offset);
     }
   }
@@ -109,17 +108,41 @@ class _MostRecentActionsState extends State<MostRecentActions> {
   }
 
   saveBill(billToUpdate) async {
-    bool save = await this.requestTools.saveBillById(billToUpdate);
-    if (save == false) {
-      return false;
-    } else {
-      for (var bill in bills) {
-        if (bill['bill_id'] == billToUpdate) {
-          bill['saved'] = true;
+    try {
+      bool save = await this.requestTools.saveBillById(billToUpdate);
+      if (save == false) {
+        return false;
+      } else {
+        for (var bill in bills) {
+          if (bill['bill_id'] == billToUpdate) {
+            bill['saved'] = true;
+          }
         }
+        setState(() {});
+        return true;
       }
-      setState(() {});
-      return true;
+    } catch (err) {
+      print('Failure to save bill: $err');
+      return false;
+    }
+  }
+
+  deleteBill(billToUpdate) async {
+    try {
+      final remove = await this.requestTools.deleteBillFromSave(billToUpdate);
+      if (remove != false) {
+        bills.forEach((bi) {
+          if (bi['bill_id'] == billToUpdate) {
+            bi['saved'] = false;
+          }
+        });
+        setState(() {});
+        return true;
+      } else
+        return false;
+    } catch (err) {
+      print('Failure to delete bill from favorites $err');
+      return false;
     }
   }
 
@@ -135,8 +158,6 @@ class _MostRecentActionsState extends State<MostRecentActions> {
                 .nextInt(4294967296)),
             controller: _controller,
             itemBuilder: (context, index) {
-              // print(this.localCongMen[1][index]);
-              // this.updateIndex();
               if (index > bills.length - 6 && addingToList == false)
                 this.getNextSeries();
               if (index == 0) {
@@ -156,13 +177,17 @@ class _MostRecentActionsState extends State<MostRecentActions> {
                     BillExpandableContainer(
                         data: bills[index],
                         middleText: 'Action',
-                        saveFunc: saveBill)
+                        saveFunc: saveBill,
+                        deleteFunc: deleteBill)
                   ],
                 );
               }
               // index -= 1;
               return BillExpandableContainer(
-                  data: bills[index], middleText: 'Action', saveFunc: saveBill);
+                  data: bills[index],
+                  middleText: 'Action',
+                  saveFunc: saveBill,
+                  deleteFunc: deleteBill);
             }),
       );
     }
