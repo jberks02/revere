@@ -29,7 +29,7 @@ class BillHeader extends StatelessWidget {
           Expanded(
               flex: 1,
               child: Text(this.enactedMessage(this.enacted),
-                  textAlign: TextAlign.center, style: TextStyle(fontSize: 20))),
+                  textAlign: TextAlign.center, style: TextStyle(fontSize: 17))),
           Expanded(
             flex: 1,
             child: Text(this.slug,
@@ -40,7 +40,7 @@ class BillHeader extends StatelessWidget {
           Expanded(
               flex: 1,
               child: Text(this.activeMessage(this.active),
-                  textAlign: TextAlign.center, style: TextStyle(fontSize: 20)))
+                  textAlign: TextAlign.center, style: TextStyle(fontSize: 17)))
         ],
       ),
     );

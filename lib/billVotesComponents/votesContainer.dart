@@ -5,13 +5,20 @@ import '../defaultInfoComponents/billTitle.dart';
 import '../defaultInfoComponents/billDates.dart';
 import '../billPageComponents/ExpandBillInfo.dart';
 import '../serverRequests/dataRequests.dart';
+import '../defaultInfoComponents/userActions.dart';
 
 class VotesContainerWithExpandable extends StatefulWidget {
   @override
-  VotesContainerWithExpandable({@required this.data});
+  VotesContainerWithExpandable(
+      {@required this.data,
+      @required this.saveFunc,
+      @required this.deleteFunc});
   final Map data;
+  final saveFunc;
+  final deleteFunc;
   _VotesContainerWithExpandableState createState() =>
-      _VotesContainerWithExpandableState(data: data);
+      _VotesContainerWithExpandableState(
+          data: data, saveFunc: saveFunc, deleteBill: deleteFunc);
 }
 
 class _VotesContainerWithExpandableState
@@ -21,7 +28,12 @@ class _VotesContainerWithExpandableState
   bool loading = false;
   bool expanded = false;
   Map expandedContent;
-  _VotesContainerWithExpandableState({@required this.data});
+  final saveFunc;
+  final deleteBill;
+  _VotesContainerWithExpandableState(
+      {@required this.data,
+      @required this.saveFunc,
+      @required this.deleteBill});
   expandVoteInfo() async {
     try {
       if (this.expanded == false) {
@@ -61,6 +73,13 @@ class _VotesContainerWithExpandableState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          UserActions(
+              saved: data['saved'],
+              saveCall: saveFunc,
+              deleteFunc: deleteBill,
+              bill_id: data['bill_id'],
+              approveDisapprove: true,
+              userVote: data['for_bill']),
           BillHeader(
             slug: data['bill_slug'],
             enacted: data['enacted'],
