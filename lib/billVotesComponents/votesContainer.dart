@@ -78,7 +78,8 @@ class _VotesContainerWithExpandableState
               saveCall: saveFunc,
               deleteFunc: deleteBill,
               bill_id: data['bill_id'],
-              approveDisapprove: true),
+              approveDisapprove: true,
+              userVote: data['for_bill']),
           BillHeader(
             slug: data['bill_slug'],
             enacted: data['enacted'],
