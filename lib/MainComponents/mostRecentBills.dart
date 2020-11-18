@@ -35,13 +35,7 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   void listen() async {
     var prefs = await SharedPreferences.getInstance();
-    double off = prefs.getDouble('listIndex');
-    if (off == null) {
-      prefs.setDouble('listIndex', 0.00);
-      off = 0.00;
-    } else {
-      prefs.setDouble('listIndex', _controller.offset);
-    }
+    prefs.setDouble('listIndex', _controller.offset);
   }
 
   initializePage() async {
@@ -118,7 +112,6 @@ class _MostRecentActionsState extends State<MostRecentActions> {
             bill['saved'] = true;
           }
         }
-        setState(() {});
         return true;
       }
     } catch (err) {
@@ -130,16 +123,12 @@ class _MostRecentActionsState extends State<MostRecentActions> {
   deleteBill(billToUpdate) async {
     try {
       final remove = await this.requestTools.deleteBillFromSave(billToUpdate);
-      if (remove != false) {
-        bills.forEach((bi) {
-          if (bi['bill_id'] == billToUpdate) {
-            bi['saved'] = false;
-          }
-        });
-        setState(() {});
-        return true;
-      } else
-        return false;
+      bills.forEach((bi) {
+        if (bi['bill_id'] == billToUpdate) {
+          bi['saved'] = false;
+        }
+      });
+      return true;
     } catch (err) {
       print('Failure to delete bill from favorites $err');
       return false;

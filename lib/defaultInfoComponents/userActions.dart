@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../serverRequests/dataRequests.dart';
@@ -9,9 +10,11 @@ class UserActions extends StatefulWidget {
       @required this.bill_id,
       @required this.deleteFunc,
       @required this.approveDisapprove,
-      this.userVote});
+      this.userVote,
+      this.voteId});
   bool saved;
   String bill_id;
+  int voteId;
   bool userVote;
   bool approveDisapprove;
   final saveCall;
@@ -23,7 +26,8 @@ class UserActions extends StatefulWidget {
       bill_id: this.bill_id,
       deleteFunc: this.deleteFunc,
       approveDisapprove: this.approveDisapprove,
-      userVote: this.userVote);
+      userVote: this.userVote,
+      voteId: this.voteId);
 }
 
 class _UserActionsState extends State<UserActions> {
@@ -33,13 +37,13 @@ class _UserActionsState extends State<UserActions> {
       @required this.bill_id,
       @required this.deleteFunc,
       @required this.approveDisapprove,
-      this.userVote});
+      this.userVote,
+      this.voteId});
   String bill_id;
+  int voteId;
   bool saved;
   bool userVote;
   bool approveDisapprove;
-  bool forBill;
-  bool againstBill;
   final saveCall;
   final deleteFunc;
   bool loading = false;
@@ -75,15 +79,16 @@ class _UserActionsState extends State<UserActions> {
 
   forButtonPressed() async {
     try {
-      if (this.forBill != true) {
+      if (this.userVote != true) {
         setState(() {
-          this.forBill = true;
-          this.againstBill = false;
+          this.userVote = true;
         });
+        setUserVoteForLoad(true);
       } else {
         setState(() {
-          this.forBill = false;
+          this.userVote = null;
         });
+        setUserVoteForLoad(null);
       }
     } catch (err) {
       print('Failure to vote for bill: $err');
@@ -92,18 +97,48 @@ class _UserActionsState extends State<UserActions> {
 
   againstButtonPressed() async {
     try {
-      if (this.againstBill != true) {
+      if (this.userVote != false) {
         setState(() {
-          this.againstBill = true;
-          this.forBill = false;
+          this.userVote = false;
         });
+        setUserVoteForLoad(false);
       } else {
         setState(() {
-          this.againstBill = false;
+          this.userVote = null;
         });
+        setUserVoteForLoad(null);
       }
     } catch (err) {
       print('Failure to vote against bill: $err');
+    }
+  }
+
+  setUserVoteForLoad(val) async {
+    try {
+      String slug = this.bill_id.split('-')[0];
+      int congressInt = int.parse(this.bill_id.split('-')[1]);
+      final prefs = await SharedPreferences.getInstance();
+      List dataSet = jsonDecode(prefs.getString('votedList'));
+      print('$val');
+      dataSet.forEach((vot) => {
+            if (vot['bill_slug'] == slug &&
+                vot['congress_int'] == congressInt &&
+                vot['vote_id'] == this.voteId)
+              {
+                vot['for_bill'] = val,
+              }
+          });
+      prefs.setString('votedList', jsonEncode(dataSet));
+      final Map payload = {
+        'bill_slug': slug,
+        'congress_int': congressInt,
+        'vote_id': this.voteId,
+        'for_bill': val,
+        'action': val == null ? 'delete' : 'update'
+      };
+      await Requests().updateUserVote(payload);
+    } catch (err) {
+      print('Failure to change saved userVote value: $err');
     }
   }
 
@@ -142,16 +177,15 @@ class _UserActionsState extends State<UserActions> {
                         flex: 1,
                         child: FlatButton(
                           color:
-                              this.forBill == true ? Colors.deepOrange : null,
+                              this.userVote == true ? Colors.deepOrange : null,
                           child: Text('For', style: TextStyle(fontSize: 15)),
                           onPressed: forButtonPressed,
                         )),
                     Expanded(
                         flex: 1,
                         child: FlatButton(
-                          color: this.againstBill == true
-                              ? Colors.deepOrange
-                              : null,
+                          color:
+                              this.userVote == false ? Colors.deepOrange : null,
                           child:
                               Text('Against', style: TextStyle(fontSize: 15)),
                           onPressed: againstButtonPressed,

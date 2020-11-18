@@ -71,6 +71,12 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
 
   void listen() async {
     var prefs = await SharedPreferences.getInstance();
+    if (_controller.offset < -90.00 && this.loading == false) {
+      resetListToBeginning();
+      setState(() {
+        this.loading = true;
+      });
+    }
     prefs.setDouble('votedOffset', _controller.offset);
   }
 
@@ -104,7 +110,6 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
             bill['saved'] = true;
           }
         }
-        setState(() {});
         return true;
       }
     } catch (err) {
@@ -116,18 +121,12 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
   deleteBill(billToUpdate) async {
     try {
       final remove = await this.requestTools.deleteBillFromSave(billToUpdate);
-      print(remove);
-      // if (remove != false) {
       bills.forEach((bi) {
         if (bi['bill_id'] == billToUpdate) {
           bi['saved'] = false;
         }
       });
-      setState(() {});
       return true;
-      // } else {
-      //   return false;
-      // }
     } catch (err) {
       print('Failure to delete bill from favorites $err');
       return false;

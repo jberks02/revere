@@ -7,6 +7,31 @@ class Requests extends UserInformation with UrlContainer {
   Requests() {
     this.validateCookie();
   }
+  updateUserVote(payload) async {
+    try {
+      bool cookieReady = await validateCookie();
+      if (cookieReady == true) {
+        print(payload);
+        final update = await req.post(this.updateUserVoteAddress,
+            headers: {
+              'cookie': this.cookie,
+              'Content-Type': 'application/json'
+            },
+            body: json.encode(payload));
+        print(update.body);
+        if (update.statusCode == 200)
+          return true;
+        else
+          return false;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      print('Failure to save user vote:  $err');
+      return false;
+    }
+  }
+
   deleteBillFromSave(bill) async {
     try {
       bool cookieReady = await validateCookie();

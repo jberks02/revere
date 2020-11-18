@@ -3,19 +3,6 @@ import 'package:device_info/device_info.dart';
 class UrlContainer {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   bool physicalDevice;
-  // String congressmenInfoUrl;
-  // String validateCookieUrl;
-  // String congressmenOutOfStateUrl;
-  // String mostRecentlyActedOnBills;
-  // String billDetailsUrl;
-  // String mostRecentlyVotedBills;
-  // String mostRecentPresStatement;
-  // String deleteUserFavorite;
-  // String updateUserFavorite;
-  // UrlContainer() {
-  //   iosInitStrut();
-  //   androidInitStrut();
-  // }
   String congressmenInfoUrl =
       'http://localhost:8080/Vigil/member/congressmen/info';
   String validateCookieUrl =
@@ -33,6 +20,8 @@ class UrlContainer {
       'http://localhost:8080/Vigil/member/userPreferences/delete/favorite';
   String updateUserFavorite =
       'http://localhost:8080/Vigil/member/userPreferences/save/favorite';
+  String updateUserVoteAddress =
+      "http://localhost:8080/Vigil/member/userPreferences/update/vote";
   iosInitStrut() async {
     try {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
