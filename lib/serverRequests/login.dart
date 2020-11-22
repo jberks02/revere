@@ -47,7 +47,6 @@ class UserInformation {
         await save.setString('user', id);
         await save.setString('pass', pass);
         await save.setBool('logged', true);
-        await save.setString('page', 'Vigil');
         await save.setString('name', bod['name']);
         await save.setString('email', bod['email']);
         if (pick != null) {

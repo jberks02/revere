@@ -110,6 +110,7 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
             bill['saved'] = true;
           }
         }
+        setState(() {});
         return true;
       }
     } catch (err) {
@@ -120,12 +121,13 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
 
   deleteBill(billToUpdate) async {
     try {
-      final remove = await this.requestTools.deleteBillFromSave(billToUpdate);
+      await this.requestTools.deleteBillFromSave(billToUpdate);
       bills.forEach((bi) {
         if (bi['bill_id'] == billToUpdate) {
           bi['saved'] = false;
         }
       });
+      setState(() {});
       return true;
     } catch (err) {
       print('Failure to delete bill from favorites $err');

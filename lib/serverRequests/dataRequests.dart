@@ -224,6 +224,28 @@ class Requests extends UserInformation with UrlContainer {
     }
   }
 
+  userTree() async {
+    try {
+      bool cookieReady = await this.validateCookie();
+      if (cookieReady == true) {
+        final dataReq = await req.get(this.userTreeRequest, headers: {
+          'Content-Type': 'application/json',
+          'cookie': this.cookie
+        });
+        if (dataReq.statusCode == 200) {
+          final List tree = jsonDecode(dataReq.body);
+          return tree;
+        } else
+          return [];
+      } else {
+        return [];
+      }
+    } catch (err) {
+      print("Failure to get user tree from nexus: $err");
+      return [];
+    }
+  }
+
   validateCookie() async {
     try {
       final val = await req.get(this.validateCookieUrl,

@@ -22,6 +22,8 @@ class UrlContainer {
       'http://localhost:8080/Vigil/member/userPreferences/save/favorite';
   String updateUserVoteAddress =
       "http://localhost:8080/Vigil/member/userPreferences/update/vote";
+  String userTreeRequest =
+      "http://localhost:8080/Vigil/member/userPreferences/userFavorites/Tree";
   iosInitStrut() async {
     try {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;

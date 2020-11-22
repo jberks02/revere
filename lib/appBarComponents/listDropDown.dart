@@ -16,14 +16,11 @@ class _LeadingDropDownState extends State<LeadingDropDown> {
   final cycle;
   String dropdown;
   _LeadingDropDownState({this.logout, this.pageChange, this.cycle});
-  List<PopupMenuEntry<dynamic>> dropList = [
-    PopupMenuItem(child: Text('Logout'), value: "Logout"),
-    PopupMenuItem(child: Text('Profile'), value: "Profile")
-  ];
   changeSelect(val) {
     if (val == 'Logout')
       this.logout(this.cycle);
-    else if (val == 'Profile') this.pageChange(val, cycle);
+    else
+      this.pageChange(val, cycle);
   }
 
   @override
@@ -36,7 +33,7 @@ class _LeadingDropDownState extends State<LeadingDropDown> {
         onSelected: (val) => changeSelect(val),
         itemBuilder: (BuildContext context) {
           return [
-            PopupMenuItem(child: Text('Profile'), value: "Profile"),
+            PopupMenuItem(child: Text('Saved Bills'), value: "Saved Bills"),
             PopupMenuItem(child: Text('Logout'), value: "Logout")
           ];
         },

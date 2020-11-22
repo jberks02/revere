@@ -26,9 +26,11 @@ class _MostRecentActionsState extends State<MostRecentActions> {
     var prefs = await SharedPreferences.getInstance();
     double off = prefs.getDouble('listIndex');
     if (off == null) {
-      _controller = new ScrollController(initialScrollOffset: 0.00);
+      _controller = new ScrollController(
+          initialScrollOffset: 0.00, keepScrollOffset: true);
     } else {
-      _controller = new ScrollController(initialScrollOffset: off);
+      _controller = new ScrollController(
+          initialScrollOffset: off, keepScrollOffset: true);
     }
     _controller.addListener(listen);
   }
@@ -112,6 +114,7 @@ class _MostRecentActionsState extends State<MostRecentActions> {
             bill['saved'] = true;
           }
         }
+        setState(() {});
         return true;
       }
     } catch (err) {
@@ -122,12 +125,13 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   deleteBill(billToUpdate) async {
     try {
-      final remove = await this.requestTools.deleteBillFromSave(billToUpdate);
+      await this.requestTools.deleteBillFromSave(billToUpdate);
       bills.forEach((bi) {
         if (bi['bill_id'] == billToUpdate) {
           bi['saved'] = false;
         }
       });
+      setState(() {});
       return true;
     } catch (err) {
       print('Failure to delete bill from favorites $err');
@@ -141,10 +145,9 @@ class _MostRecentActionsState extends State<MostRecentActions> {
       return Text('Loading...');
     } else {
       return Scrollbar(
+        controller: ScrollController(keepScrollOffset: true),
         child: ListView.builder(
             itemCount: bills.length,
-            key: ValueKey<int>(Random(DateTime.now().millisecondsSinceEpoch)
-                .nextInt(4294967296)),
             controller: _controller,
             itemBuilder: (context, index) {
               if (index > bills.length - 6 && addingToList == false)
