@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import './actionTile.dart';
+import './voteTile.dart';
 
 class EventList extends StatelessWidget {
   final List events;
@@ -6,11 +8,12 @@ class EventList extends StatelessWidget {
   getWidgetArray() {
     List<Widget> eventList = [];
     events.forEach((event) {
-      print(event);
       if (event['action_id'] != null) {
-        eventList.add(Text('action butt'));
+        eventList.add(ActionTile(data: event, middleText: 'Action'));
+      } else if (event['vote_id'] != null) {
+        eventList.add(VoteTile(data: event));
       } else {
-        eventList.add(Text('vote butt'));
+        eventList.add(Text('Presidential Statement'));
       }
     });
     return eventList;

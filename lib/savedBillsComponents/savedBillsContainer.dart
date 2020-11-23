@@ -22,6 +22,7 @@ class _BillInfoExpandableState extends State<BillInfoExpandable> {
     });
   }
 
+//TODO: add unsave button to this component to remove it from list
   _BillInfoExpandableState({@required this.bill});
   @override
   Widget build(BuildContext context) {

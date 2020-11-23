@@ -12,7 +12,6 @@ class TitleDate extends StatelessWidget {
     return Expanded(
       flex: 1,
       child: Container(
-        margin: EdgeInsets.all(5),
         padding: EdgeInsets.all(5),
         child: Column(
           children: <Widget>[

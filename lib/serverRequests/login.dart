@@ -40,7 +40,7 @@ class UserInformation {
           await req.post('http://localhost:8080/login/user', body: info);
       if (success.statusCode == 200) {
         utf8.encode(json.encode(success.headers));
-        var bod = json.decode(success.body);
+        var bod = json.decode(success.body)['body'];
         final headerKey = "cookie";
         final header = success.headers['set-cookie'];
         await save.setString(headerKey, header);
@@ -49,6 +49,8 @@ class UserInformation {
         await save.setBool('logged', true);
         await save.setString('name', bod['name']);
         await save.setString('email', bod['email']);
+        await save.setString('state', bod['state']);
+        await save.setString('page', 'Vigil');
         if (pick != null) {
           pick(() {
             this.setNewInfo();
