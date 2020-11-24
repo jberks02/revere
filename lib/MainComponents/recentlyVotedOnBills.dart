@@ -141,7 +141,6 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
       return Text('Loading...');
     } else {
       return Scrollbar(
-        controller: ScrollController(keepScrollOffset: true),
         child: ListView.builder(
             itemCount: bills.length,
             controller: _controller,

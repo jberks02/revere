@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../defaultInfoComponents/billTitle.dart';
 import '../serverRequests/dataRequests.dart';
 import '../defaultInfoComponents/billDates.dart';
@@ -16,12 +18,91 @@ class _VoteTileState extends State<VoteTile> {
   final Map data;
   bool loading = false;
   bool expanded = false;
-  Map expandedContent;
-  _VoteTileState({@required this.data});
-//TODO: Add For and against button pushes to this tile
+  bool userVote;
+
+  _VoteTileState({@required this.data}) {
+    this.userVote = this.data['for_bill'];
+  }
+  forButtonPressed() async {
+    try {
+      if (this.userVote != true) {
+        if (this.userVote == null)
+          data['for'] = data['for'] + 1;
+        else {
+          data['for'] = data['for'] + 1;
+          data['against'] = data['against'] - 1;
+        }
+        setState(() {
+          this.userVote = true;
+        });
+        setUserVoteForLoad(true);
+      } else {
+        setState(() {
+          data['for'] = data['for'] - 1;
+          this.userVote = null;
+        });
+        setUserVoteForLoad(null);
+      }
+    } catch (err) {
+      print('Failure to vote for bill: $err');
+    }
+  }
+
+  againstButtonPressed() async {
+    try {
+      if (this.userVote != false) {
+        if (this.userVote == null)
+          data['against'] = data['against'] + 1;
+        else {
+          data['against'] = data['against'] + 1;
+          data['for'] = data['for'] - 1;
+        }
+        setState(() {
+          this.userVote = false;
+        });
+        setUserVoteForLoad(false);
+      } else {
+        data['against'] = data['against'] - 1;
+        setState(() {
+          this.userVote = null;
+        });
+        setUserVoteForLoad(null);
+      }
+    } catch (err) {
+      print('Failure to vote against bill: $err');
+    }
+  }
+
+  setUserVoteForLoad(val) async {
+    try {
+      String slug = data['bill_slug'];
+      int congressInt = data['congress_int'];
+      final prefs = await SharedPreferences.getInstance();
+      List dataSet = jsonDecode(prefs.getString('votedList'));
+      dataSet.forEach((vot) => {
+            if (vot['bill_slug'] == slug &&
+                vot['congress_int'] == congressInt &&
+                vot['vote_id'] == data['vote_id'])
+              {
+                vot['for_bill'] = val,
+              }
+          });
+      prefs.setString('votedList', jsonEncode(dataSet));
+      final Map payload = {
+        'bill_slug': slug,
+        'congress_int': congressInt,
+        'vote_id': data['vote_id'],
+        'for_bill': val,
+        'action': val == null ? 'delete' : 'update'
+      };
+      await Requests().updateUserVote(payload);
+    } catch (err) {
+      print('Failure to change saved userVote value: $err');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(data['user_vote']);
     double cWidth = MediaQuery.of(context).size.width;
     return Container(
       width: cWidth,
@@ -35,6 +116,52 @@ class _VoteTileState extends State<VoteTile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: FlatButton(
+                    color:
+                        this.userVote == true ? Colors.deepOrange : Colors.grey,
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 2,
+                            child: Text('For', style: TextStyle(fontSize: 20))),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              '${data['for']}',
+                              textAlign: TextAlign.right,
+                            ))
+                      ],
+                    ),
+                    onPressed: forButtonPressed,
+                  )),
+              Expanded(
+                  flex: 1,
+                  child: FlatButton(
+                    color: this.userVote == false
+                        ? Colors.deepOrange
+                        : Colors.grey,
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 2,
+                            child: Text('Against',
+                                style: TextStyle(fontSize: 20))),
+                        Expanded(
+                            flex: 1,
+                            child: Text(
+                              '${data['against']}',
+                              textAlign: TextAlign.right,
+                            ))
+                      ],
+                    ),
+                    onPressed: againstButtonPressed,
+                  ))
+            ],
+          ),
           Text(
             'Vote: ${data['vote_id']}',
             style:

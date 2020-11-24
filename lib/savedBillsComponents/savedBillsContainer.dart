@@ -22,7 +22,6 @@ class _BillInfoExpandableState extends State<BillInfoExpandable> {
     });
   }
 
-//TODO: add unsave button to this component to remove it from list
   _BillInfoExpandableState({@required this.bill});
   @override
   Widget build(BuildContext context) {
@@ -76,12 +75,6 @@ class _BillInfoExpandableState extends State<BillInfoExpandable> {
                   ),
                 ),
                 Text(
-                  'Summary',
-                  style: TextStyle(
-                      fontSize: 20, decoration: TextDecoration.underline),
-                ),
-                BillTitle(text: bill['summary']),
-                Text(
                   'Title',
                   style: TextStyle(
                       fontSize: 20, decoration: TextDecoration.underline),
@@ -89,6 +82,12 @@ class _BillInfoExpandableState extends State<BillInfoExpandable> {
                 BillTitle(
                   text: bill['title'],
                 ),
+                Text(
+                  'Summary',
+                  style: TextStyle(
+                      fontSize: 20, decoration: TextDecoration.underline),
+                ),
+                BillTitle(text: bill['summary']),
                 Text(
                   'Details',
                   style: TextStyle(

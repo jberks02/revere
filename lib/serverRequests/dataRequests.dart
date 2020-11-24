@@ -11,18 +11,16 @@ class Requests extends UserInformation with UrlContainer {
     try {
       bool cookieReady = await validateCookie();
       if (cookieReady == true) {
-        print(payload);
         final update = await req.post(this.updateUserVoteAddress,
             headers: {
               'cookie': this.cookie,
               'Content-Type': 'application/json'
             },
             body: json.encode(payload));
-        print(update.body);
         if (update.statusCode == 200)
           return true;
         else
-          return false;
+          throw false;
       } else {
         return false;
       }

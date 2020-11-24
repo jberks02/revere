@@ -15,7 +15,6 @@ class _MostRecentActionsState extends State<MostRecentActions> {
   List bills;
   bool loading = true;
   bool addingToList = false;
-  int initialScrollOffset = 0;
   static ScrollController _controller;
 
   _MostRecentActionsState() {
@@ -37,27 +36,25 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   void listen() async {
     var prefs = await SharedPreferences.getInstance();
-    prefs.setDouble('listIndex', _controller.offset);
+    if (_controller.offset < -90.00 && this.loading == false) {
+      this.getBeginningOfList(prefs);
+      this.setState(() {
+        this.loading = true;
+      });
+    } else {
+      prefs.setDouble('listIndex', _controller.offset);
+    }
   }
 
   initializePage() async {
     try {
       var prefs = await SharedPreferences.getInstance();
       String initialBillString = prefs.getString('ActionList');
-      String initialUpdateString = prefs.getString('ActionUpdateDate');
-      DateTime today = new DateTime.now();
-      DateTime lastLoad = initialUpdateString == null
-          ? null
-          : DateTime.parse(initialUpdateString);
-      if (initialBillString == null ||
-          today.day > lastLoad.day && today.month != lastLoad.month) {
+      if (initialBillString == null) {
         this.getBeginningOfList(prefs);
       } else {
         setState(() {
           this.bills = jsonDecode(initialBillString);
-          this.initialScrollOffset = prefs.getDouble('listIndex') == null
-              ? 0
-              : prefs.getDouble('listIndex');
           loading = false;
         });
       }
@@ -70,13 +67,15 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   getBeginningOfList(prefs) async {
     try {
+      print('begginning of list');
+      this.setState(() {
+        loading = true;
+      });
       final billList = await this.requestTools.mostRecentBills('mostrecent');
       prefs.setString('ActionList', jsonEncode(billList));
       prefs.setString('ActionUpdateDate', DateTime.now().toString());
-      prefs.getDouble('listIndex');
       setState(() {
         this.bills = billList;
-        this.initialScrollOffset = 0;
         loading = false;
       });
     } catch (err) {
@@ -105,18 +104,15 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   saveBill(billToUpdate) async {
     try {
-      bool save = await this.requestTools.saveBillById(billToUpdate);
-      if (save == false) {
-        return false;
-      } else {
-        for (var bill in bills) {
-          if (bill['bill_id'] == billToUpdate) {
-            bill['saved'] = true;
-          }
+      final prefs = await SharedPreferences.getInstance();
+      await this.requestTools.saveBillById(billToUpdate);
+      bills.forEach((bill) {
+        if (bill['bill_id'] == billToUpdate) {
+          bill['saved'] = true;
         }
-        setState(() {});
-        return true;
-      }
+      });
+      prefs.setString('ActionList', jsonEncode(this.bills));
+      return true;
     } catch (err) {
       print('Failure to save bill: $err');
       return false;
@@ -125,13 +121,14 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   deleteBill(billToUpdate) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
       await this.requestTools.deleteBillFromSave(billToUpdate);
       bills.forEach((bi) {
         if (bi['bill_id'] == billToUpdate) {
           bi['saved'] = false;
         }
       });
-      setState(() {});
+      prefs.setString('ActionList', jsonEncode(this.bills));
       return true;
     } catch (err) {
       print('Failure to delete bill from favorites $err');
@@ -145,11 +142,11 @@ class _MostRecentActionsState extends State<MostRecentActions> {
       return Text('Loading...');
     } else {
       return Scrollbar(
-        controller: ScrollController(keepScrollOffset: true),
         child: ListView.builder(
-            itemCount: bills.length,
             controller: _controller,
+            itemCount: bills.length,
             itemBuilder: (context, index) {
+              print('saved or deleted : $index');
               if (index > bills.length - 6 && addingToList == false)
                 this.getNextSeries();
               if (index == 0) {

@@ -11,10 +11,14 @@ class UserActions extends StatefulWidget {
       @required this.deleteFunc,
       @required this.approveDisapprove,
       this.userVote,
-      this.voteId});
+      this.voteId,
+      this.forBill,
+      this.againstBill});
   bool saved;
   String bill_id;
   int voteId;
+  int forBill;
+  int againstBill;
   bool userVote;
   bool approveDisapprove;
   final saveCall;
@@ -27,20 +31,27 @@ class UserActions extends StatefulWidget {
       deleteFunc: this.deleteFunc,
       approveDisapprove: this.approveDisapprove,
       userVote: this.userVote,
-      voteId: this.voteId);
+      voteId: this.voteId,
+      forBill: this.forBill,
+      againstBill: this.againstBill);
 }
 
 class _UserActionsState extends State<UserActions> {
-  _UserActionsState(
-      {@required this.saved,
-      @required this.saveCall,
-      @required this.bill_id,
-      @required this.deleteFunc,
-      @required this.approveDisapprove,
-      this.userVote,
-      this.voteId});
+  _UserActionsState({
+    @required this.saved,
+    @required this.saveCall,
+    @required this.bill_id,
+    @required this.deleteFunc,
+    @required this.approveDisapprove,
+    this.userVote,
+    this.voteId,
+    this.forBill,
+    this.againstBill,
+  });
   String bill_id;
   int voteId;
+  int forBill;
+  int againstBill;
   bool saved;
   bool userVote;
   bool approveDisapprove;
@@ -80,11 +91,14 @@ class _UserActionsState extends State<UserActions> {
   forButtonPressed() async {
     try {
       if (this.userVote != true) {
+        this.forBill = this.forBill + 1;
+        if (this.userVote == false) this.againstBill = this.againstBill - 1;
         setState(() {
           this.userVote = true;
         });
         setUserVoteForLoad(true);
       } else {
+        this.forBill = this.forBill - 1;
         setState(() {
           this.userVote = null;
         });
@@ -98,11 +112,14 @@ class _UserActionsState extends State<UserActions> {
   againstButtonPressed() async {
     try {
       if (this.userVote != false) {
+        this.againstBill = this.againstBill + 1;
+        if (this.userVote == true) this.forBill = this.forBill - 1;
         setState(() {
           this.userVote = false;
         });
         setUserVoteForLoad(false);
       } else {
+        this.againstBill = this.againstBill - 1;
         setState(() {
           this.userVote = null;
         });
@@ -159,9 +176,9 @@ class _UserActionsState extends State<UserActions> {
                         ? Icons.save
                         : Icons.download_done_outlined,
                     color: Colors.deepOrange,
-                    size: 40),
+                    size: 35),
                 Text(
-                  'Save Bill',
+                  'Save',
                   style: TextStyle(fontSize: 15),
                 ),
               ],
@@ -170,24 +187,49 @@ class _UserActionsState extends State<UserActions> {
         ),
         this.approveDisapprove == true
             ? Expanded(
-                flex: 2,
+                flex: 3,
                 child: Row(
                   children: [
                     Expanded(
                         flex: 1,
                         child: FlatButton(
-                          color:
-                              this.userVote == true ? Colors.deepOrange : null,
-                          child: Text('For', style: TextStyle(fontSize: 15)),
+                          color: this.userVote == true
+                              ? Colors.deepOrange
+                              : Colors.grey,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  flex: 2,
+                                  child: Text('For',
+                                      style: TextStyle(fontSize: 15))),
+                              Expanded(
+                                  flex: 1,
+                                  child: Text('$forBill',
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(fontSize: 10)))
+                            ],
+                          ),
                           onPressed: forButtonPressed,
                         )),
                     Expanded(
                         flex: 1,
                         child: FlatButton(
-                          color:
-                              this.userVote == false ? Colors.deepOrange : null,
-                          child:
-                              Text('Against', style: TextStyle(fontSize: 15)),
+                          color: this.userVote == false
+                              ? Colors.deepOrange
+                              : Colors.grey,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  flex: 2,
+                                  child: Text('Against',
+                                      style: TextStyle(fontSize: 15))),
+                              Expanded(
+                                  flex: 1,
+                                  child: Text('$againstBill',
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(fontSize: 10)))
+                            ],
+                          ),
                           onPressed: againstButtonPressed,
                         ))
                   ],

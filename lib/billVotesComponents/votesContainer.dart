@@ -74,13 +74,16 @@ class _VotesContainerWithExpandableState
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           UserActions(
-              saved: data['saved'],
-              saveCall: saveFunc,
-              deleteFunc: deleteBill,
-              bill_id: data['bill_id'],
-              approveDisapprove: true,
-              userVote: data['for_bill'],
-              voteId: data['vote_id']),
+            saved: data['saved'],
+            saveCall: saveFunc,
+            deleteFunc: deleteBill,
+            bill_id: data['bill_id'],
+            approveDisapprove: true,
+            userVote: data['for_bill'],
+            voteId: data['vote_id'],
+            forBill: data['for'],
+            againstBill: data['against'],
+          ),
           BillHeader(
             slug: data['bill_slug'],
             enacted: data['enacted'],

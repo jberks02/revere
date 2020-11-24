@@ -18,7 +18,7 @@ class _PointVoteScrollerState extends State<PointVoteScroller> {
   bool userVote;
   final sharedPrefs = SharedPreferences.getInstance();
   final List data;
-  static ScrollController _controller;
+  // static ScrollController pointVoteController;
   _PointVoteScrollerState({this.data, this.userVote}) {
     initializeUserTree();
   }
@@ -30,8 +30,8 @@ class _PointVoteScrollerState extends State<PointVoteScroller> {
         off = 0.00;
         prefs.setDouble('savedPointVoteOffset', 0.00);
       }
-      _controller = new ScrollController(initialScrollOffset: off);
-      _controller.addListener(listen);
+      // pointVoteController = new ScrollController(initialScrollOffset: off);
+      // pointVoteController.addListener(listen);
       setState(() {
         loading = false;
         failed = data.isEmpty ? true : false;
@@ -42,20 +42,20 @@ class _PointVoteScrollerState extends State<PointVoteScroller> {
     }
   }
 
-  listen() async {
-    try {
-      final prefs = await sharedPrefs;
-      if (_controller.offset < -80.00 && loading == false) {
-        setState(() {
-          loading = true;
-        });
-        initializeUserTree();
-      }
-      prefs.setDouble('savedPointVoteOffset', _controller.offset);
-    } catch (err) {
-      print('listener failed to save position: $err');
-    }
-  }
+  // listen() async {
+  //   try {
+  //     final prefs = await sharedPrefs;
+  //     if (pointVoteController.offset < -80.00 && loading == false) {
+  //       setState(() {
+  //         loading = true;
+  //       });
+  //       initializeUserTree();
+  //     }
+  //     prefs.setDouble('savedPointVoteOffset', pointVoteController.offset);
+  //   } catch (err) {
+  //     print('listener failed to save position: $err');
+  //   }
+  // }
 
   getColorBasedOnUserVote(pos) {
     bool congVote = pos == 'Yes' ? true : false;
@@ -82,42 +82,42 @@ class _PointVoteScrollerState extends State<PointVoteScroller> {
           border: Border.all(width: 2, color: Colors.grey),
           borderRadius: BorderRadius.circular(5)),
       child: Scrollbar(
-          controller: ScrollController(keepScrollOffset: true),
+          // controller: ScrollController(keepScrollOffset: true),
           child: ListView.builder(
-            itemCount: data.length,
-            controller: _controller,
-            itemBuilder: (context, index) {
-              Map voter = data[index];
-              return Container(
-                padding: EdgeInsets.all(5),
-                margin: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    border: this.state == voter['state']
-                        ? Border.all(width: 2, color: Colors.amber)
-                        : Border.all(width: 2, color: Colors.black54),
-                    borderRadius: BorderRadius.circular(15),
-                    color: getColorBasedOnUserVote(voter['vote_position'])),
-                child: Column(
-                  children: [
-                    DatesRow(
-                        introString: 'Name',
-                        introDate: voter['full_name'],
-                        lastAct: voter['member_party'].toString().split('T')[0],
-                        lastActHeader: 'Party'),
-                    DatesRow(
-                      introString: 'State',
-                      introDate: voter['state'],
-                      lastActHeader: 'Title',
-                      lastAct: voter['title'],
-                    ),
-                    Text('Vote Position: ${voter['vote_position']}',
-                        style: TextStyle(
-                            decoration: TextDecoration.underline, fontSize: 15))
-                  ],
+        itemCount: data.length,
+        // controller: pointVoteController,
+        itemBuilder: (context, index) {
+          Map voter = data[index];
+          return Container(
+            padding: EdgeInsets.all(5),
+            margin: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+                border: this.state == voter['state']
+                    ? Border.all(width: 2, color: Colors.amber)
+                    : Border.all(width: 2, color: Colors.black54),
+                borderRadius: BorderRadius.circular(15),
+                color: getColorBasedOnUserVote(voter['vote_position'])),
+            child: Column(
+              children: [
+                DatesRow(
+                    introString: 'Name',
+                    introDate: voter['full_name'],
+                    lastAct: voter['member_party'].toString().split('T')[0],
+                    lastActHeader: 'Party'),
+                DatesRow(
+                  introString: 'State',
+                  introDate: voter['state'],
+                  lastActHeader: 'Title',
+                  lastAct: voter['title'],
                 ),
-              );
-            },
-          )),
+                Text('Vote Position: ${voter['vote_position']}',
+                    style: TextStyle(
+                        decoration: TextDecoration.underline, fontSize: 15))
+              ],
+            ),
+          );
+        },
+      )),
     );
   }
 }
