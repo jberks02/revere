@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../serverRequests/dataRequests.dart';
 import '../defaultInfoComponents/billTitle.dart';
-import '../billPageComponents/billContainerHeader.dart';
+import '../defaultInfoComponents/billDates.dart';
 
 // class ActionTile extends StatefulWidget {
 //   ActionTile({@required this.data, @required this.middleText});
@@ -44,12 +44,13 @@ class ActionTile extends StatelessWidget {
           Text("Action: ${data['action_id']}",
               style: TextStyle(
                   fontSize: 20, decoration: TextDecoration.underline)),
+          DatesRow(
+            introString: 'Action Date',
+            introDate: data['action_date'].split('T')[0],
+            lastAct: data['action_chamber'],
+            lastActHeader: 'Chamber',
+          ),
           BillTitle(text: data['description']),
-          // DatesRow(
-          //   introDate: data['introduction_date'],
-          //   lastAct: data['action_date'].split('T')[0],
-          //   lastActHeader: 'Action Date',
-          // ),
         ],
       ),
     );

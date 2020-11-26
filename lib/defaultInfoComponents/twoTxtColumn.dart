@@ -18,6 +18,7 @@ class TitleDate extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(this.title,
+                  overflow: TextOverflow.fade,
                   style: TextStyle(
                       fontSize: 17, decoration: TextDecoration.underline)),
             ),

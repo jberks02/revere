@@ -167,8 +167,12 @@ class _VoteTileState extends State<VoteTile> {
             style:
                 TextStyle(fontSize: 20, decoration: TextDecoration.underline),
           ),
-          BillTitle(
-            text: data['vote_question'],
+          Container(
+            margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
+            child: Text(
+              data['vote_question'],
+              style: TextStyle(fontSize: 18),
+            ),
           ),
           DatesRow(
               introString: 'Vote Time',
@@ -180,6 +184,11 @@ class _VoteTileState extends State<VoteTile> {
             introDate: '${data['yes']}',
             lastActHeader: 'Votes Against',
             lastAct: '${data['no']}',
+          ),
+          Text(
+            'Chamber: ${data['vote_chamber']}',
+            style:
+                TextStyle(fontSize: 20, decoration: TextDecoration.underline),
           ),
           PointVoteScroller(
               data: data['pointVote'], userVote: data['user_vote'])

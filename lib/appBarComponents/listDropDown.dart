@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LeadingDropDown extends StatefulWidget {
   final logout;
@@ -16,13 +17,23 @@ class _LeadingDropDownState extends State<LeadingDropDown> {
   final cycle;
   String dropdown;
   _LeadingDropDownState({this.logout, this.pageChange, this.cycle});
-  changeSelect(val) {
-    if (val == 'Logout')
-      this.logout(this.cycle);
-    else
-      this.pageChange(val, cycle);
+  changeSelect(val) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      bool logged = prefs.getBool('logged');
+      print("page name in drop down: $val");
+      if (logged == true) {
+        if (val == 'Logout')
+          this.logout(this.cycle);
+        else
+          this.pageChange(val, cycle);
+      }
+    } catch (err) {
+      print('failure to change selected page: $err');
+    }
   }
 
+//TODO: Debug issue where going to the saved bills page clears all history and makes back button useless
   @override
   Widget build(BuildContext context) {
     return ButtonTheme(
@@ -34,6 +45,7 @@ class _LeadingDropDownState extends State<LeadingDropDown> {
         itemBuilder: (BuildContext context) {
           return [
             PopupMenuItem(child: Text('Saved Bills'), value: "Saved Bills"),
+            PopupMenuItem(child: Text('Profile'), value: 'Profile'),
             PopupMenuItem(child: Text('Logout'), value: "Logout")
           ];
         },

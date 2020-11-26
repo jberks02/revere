@@ -5,24 +5,30 @@ class StatesDropDown extends StatelessWidget {
   final callback;
   final dropVal;
   final states = statesList;
-  StatesDropDown({@required this.callback, @required this.dropVal});
+  final int flexInt;
+  final bool enabled;
+  StatesDropDown(
+      {@required this.callback,
+      @required this.dropVal,
+      this.flexInt,
+      this.enabled});
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      flex: 0,
+      flex: this.flexInt == null ? 0 : this.flexInt,
       child: Container(
         // color: Colors.white,
         margin: EdgeInsets.all(20),
         child: ButtonTheme(
           alignedDropdown: true,
           child: DropdownButton(
-            hint: Text("Choose Your State"),
+            hint: Text(this.dropVal),
             isExpanded: true,
             isDense: false,
             dropdownColor: Colors.transparent,
-            onChanged: (sel) => this.callback(sel),
+            onChanged:
+                this.enabled == true ? (sel) => this.callback(sel) : null,
             value: this.dropVal,
-            // iconEnabledColor: Colors.black,
             items: states,
             iconSize: 40,
           ),
@@ -31,12 +37,3 @@ class StatesDropDown extends StatelessWidget {
     );
   }
 }
-// TextField(
-//           onChanged: (sel) => {print('we selected: $sel')},
-//           obscureText: false,
-//           decoration: InputDecoration(
-//               hintText: 'Choose Your State',
-//               fillColor: Colors.white,
-//               filled: true,
-//               border: InputBorder.none),
-//         )

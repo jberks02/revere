@@ -8,6 +8,7 @@ import './appBarComponents/backArrow.dart';
 import './MainComponents/mostRecentBills.dart';
 import './MainComponents/recentlyVotedOnBills.dart';
 import './MainComponents/savedBills.dart';
+import './profileComponentSet/profileContainer.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -32,6 +33,8 @@ class _HomePageState extends State<HomePage> {
       return SignUpPage(tools: this.tools, cycle: setState);
     else if (page == "Saved Bills")
       return SavedBills();
+    else if (page == 'Profile')
+      return ProfileContainer();
     else
       return LoginMain(tools: this.tools, pickScreen: setState);
   }

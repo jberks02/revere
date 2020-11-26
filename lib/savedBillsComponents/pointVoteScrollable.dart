@@ -78,6 +78,7 @@ class _PointVoteScrollerState extends State<PointVoteScroller> {
     return Container(
       height: 400,
       width: cWidth,
+      margin: EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
           border: Border.all(width: 2, color: Colors.grey),
           borderRadius: BorderRadius.circular(5)),

@@ -24,6 +24,10 @@ class UrlContainer {
       "http://localhost:8080/Vigil/member/userPreferences/update/vote";
   String userTreeRequest =
       "http://localhost:8080/Vigil/member/userPreferences/userFavorites/Tree";
+  String updateUserDetails =
+      "http://localhost:8080/Vigil/member/userPreferences/userDetails/update";
+  String newUserSignUp = "http://localhost:8080/login/newUser";
+  String userLogin = "http://localhost:8080/login/user";
   iosInitStrut() async {
     try {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;

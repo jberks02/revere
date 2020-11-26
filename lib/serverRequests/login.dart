@@ -1,8 +1,9 @@
 import 'package:http/http.dart' as req;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import './urlClass.dart';
 
-class UserInformation {
+class UserInformation extends UrlContainer {
   String userName;
   String pass;
   bool logged;
@@ -36,8 +37,7 @@ class UserInformation {
     try {
       final save = await SharedPreferences.getInstance();
       final Object info = {"id": id, "pass": pass};
-      final success =
-          await req.post('http://localhost:8080/login/user', body: info);
+      final success = await req.post(this.userLogin, body: info);
       if (success.statusCode == 200) {
         utf8.encode(json.encode(success.headers));
         var bod = json.decode(success.body)['body'];
@@ -51,6 +51,7 @@ class UserInformation {
         await save.setString('email', bod['email']);
         await save.setString('state', bod['state']);
         await save.setString('page', 'Vigil');
+        await this.newPage('Vigil', null);
         if (pick != null) {
           pick(() {
             this.setNewInfo();
@@ -74,7 +75,11 @@ class UserInformation {
       sto.setString('cookie', null);
       sto.setString('page', 'Login');
       sto.setBool('logged', false);
-      this.newPage('Login', route);
+      sto.setStringList('pageHistory', null);
+      sto.setString('email', null);
+      sto.setString('state', null);
+      sto.setString('name', null);
+      await this.newPage('Login', null);
       route(() {
         this.setNewInfo();
       });
@@ -94,8 +99,7 @@ class UserInformation {
         "State": state,
         "name": name
       };
-      final request =
-          await req.post("http://localhost:8080/login/newUser", body: newUser);
+      final request = await req.post(this.newUserSignUp, body: newUser);
       if (request.statusCode == 200) {
         final save = await SharedPreferences.getInstance();
         utf8.encode(json.encode(request.headers));
@@ -133,18 +137,19 @@ class UserInformation {
       final prefs = await SharedPreferences.getInstance();
       // await this.handlePageHistory(page, true);
       List<String> pageHistory = prefs.getStringList('pageHistory');
-      if (pageHistory == null) {
-        pageHistory = ['Vigil'];
-      } else {
-        pageHistory[0] = 'Vigil';
-      }
+      if (pageHistory == null) pageHistory = [];
+      if (page == 'Vigil') pageHistory = ['Vigil'];
+
       pageHistory.add(page);
       final toWrite = pageHistory.toSet().toList();
+      print('list to write: $toWrite');
       prefs.setStringList('pageHistory', toWrite);
       prefs.setString('page', page);
-      cycle(() {
-        this.setNewInfo();
-      });
+      if (cycle != null) {
+        cycle(() {
+          this.setNewInfo();
+        });
+      }
     } catch (err) {
       print('Failure to set new page: $err');
     }
@@ -168,6 +173,45 @@ class UserInformation {
       }
     } catch (err) {
       print('Failed to go pack a page: $err');
+      return false;
+    }
+  }
+
+  setNewProfileInfo(payload) async {
+    try {
+      bool cookieReady = await this.validateCookie();
+      if (cookieReady == true) {
+        final updateInfoRequest = await req.post(this.updateUserDetails,
+            headers: {
+              'Content-Type': 'application/json',
+              'cookie': this.cookie
+            },
+            body: jsonEncode(payload));
+        if (updateInfoRequest.statusCode == 200) {
+          await login(this.userName, this.pass, null);
+          return true;
+        } else
+          return false;
+      } else
+        return false;
+    } catch (err) {
+      print('failed to set new user configs: $err');
+      return false;
+    }
+  }
+
+  validateCookie() async {
+    try {
+      final val = await req.get(this.validateCookieUrl,
+          headers: {'Content-Type': 'application/json', 'cookie': this.cookie});
+      if (val.statusCode == 200) {
+        return true;
+      } else {
+        await this.setNewInfo();
+        return await this.login(this.userName, this.pass, null);
+      }
+    } catch (err) {
+      print('Failure in validate cookie function: $err');
       return false;
     }
   }
