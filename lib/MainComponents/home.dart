@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../serverRequests/dataRequests.dart';
 import '../homePagecomponents/CongressmanCard.dart';
 import '../homePagecomponents/cardListBanner.dart';
+import '../utilWidgets/loadingPage.dart';
+import '../utilWidgets/failedLoad.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -12,6 +14,8 @@ class _MainPageState extends State<MainPage> {
   bool loadingLocalCongressMen = true;
   bool loadingMostRecentBills = true;
   bool loadingOutOfStateCong = true;
+  bool loading = true;
+  bool failed = false;
   final requestTools = Requests();
   List localCongMen;
   List allCongMen = [];
@@ -21,6 +25,8 @@ class _MainPageState extends State<MainPage> {
   }
   retrieveCongMen() async {
     try {
+      failed = false;
+      loading = true;
       this.localCongMen = await this.requestTools.requestCongressMenInfo();
       this.loadingLocalCongressMen = false;
       allCongMen.add({
@@ -48,9 +54,15 @@ class _MainPageState extends State<MainPage> {
         'color': Color(0xffbf0d1f)
       });
       for (var loc in this.outerCongMen['representatives']) allCongMen.add(loc);
-      this.setState(() {});
+      this.setState(() {
+        loading = false;
+      });
     } catch (err) {
       print('Failure in retriveCongMen method of the MainPage class: $err');
+      setState(() {
+        failed = true;
+        loading = false;
+      });
     }
   }
 
@@ -58,8 +70,10 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     // for (var info in this.outerCongMen['representatives']) print(info);
     // print('break');
-    if (this.allCongMen == null) {
-      return Text('loading...');
+    if (this.failed == true)
+      return FailedLoad(reload: this.retrieveCongMen);
+    else if (this.loading == true) {
+      return LoadingPage();
     } else {
       return ListView.builder(
           itemCount: allCongMen.length,

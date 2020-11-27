@@ -3,13 +3,36 @@ import 'dart:convert';
 import './login.dart';
 import './urlClass.dart';
 
-class Requests extends UserInformation with UrlContainer {
+class Requests extends UserInformation {
   Requests() {
     this.validateCookie();
   }
+  updateUserVote(payload) async {
+    try {
+      bool cookieReady = await this.validateCookie();
+      if (cookieReady == true) {
+        final update = await req.post(this.updateUserVoteAddress,
+            headers: {
+              'cookie': this.cookie,
+              'Content-Type': 'application/json'
+            },
+            body: json.encode(payload));
+        if (update.statusCode == 200)
+          return true;
+        else
+          throw false;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      print('Failure to save user vote:  $err');
+      return false;
+    }
+  }
+
   deleteBillFromSave(bill) async {
     try {
-      bool cookieReady = await validateCookie();
+      bool cookieReady = await this.validateCookie();
       if (cookieReady == true) {
         final Map sentData = {'bill': bill};
         final update = await req.post(this.deleteUserFavorite,
@@ -30,7 +53,7 @@ class Requests extends UserInformation with UrlContainer {
 
   saveBillById(bill) async {
     try {
-      bool cookieReady = await validateCookie();
+      bool cookieReady = await this.validateCookie();
       if (cookieReady == true) {
         final Map sentData = {'bill': bill};
         final update = await req.post(this.updateUserFavorite,
@@ -54,7 +77,7 @@ class Requests extends UserInformation with UrlContainer {
 
   requestOutOfStateCongressMen() async {
     try {
-      bool cookieReady = await validateCookie();
+      bool cookieReady = await this.validateCookie();
       if (cookieReady == true) {
         final outCong = await req.get(this.congressmenOutOfStateUrl, headers: {
           'Content-Type': 'application/json',
@@ -78,7 +101,7 @@ class Requests extends UserInformation with UrlContainer {
 
   mostRecentBills(date) async {
     try {
-      bool cookieReady = await validateCookie();
+      bool cookieReady = await this.validateCookie();
       if (cookieReady == true) {
         final billList = await req.get(this.mostRecentlyActedOnBills + date,
             headers: {
@@ -199,19 +222,41 @@ class Requests extends UserInformation with UrlContainer {
     }
   }
 
-  validateCookie() async {
+  userTree() async {
     try {
-      final val = await req.get(this.validateCookieUrl,
-          headers: {'Content-Type': 'application/json', 'cookie': this.cookie});
-      if (val.statusCode == 200) {
-        return true;
+      bool cookieReady = await this.validateCookie();
+      if (cookieReady == true) {
+        final dataReq = await req.get(this.userTreeRequest, headers: {
+          'Content-Type': 'application/json',
+          'cookie': this.cookie
+        });
+        if (dataReq.statusCode == 200) {
+          final List tree = jsonDecode(dataReq.body);
+          return tree;
+        } else
+          return [];
       } else {
-        await this.setNewInfo();
-        return await this.login(this.userName, this.pass, null);
+        return [];
       }
     } catch (err) {
-      print('Failure in validate cookie function: $err');
-      return false;
+      print("Failure to get user tree from nexus: $err");
+      return [];
     }
   }
+
+  // this.validateCookie() async {
+  //   try {
+  //     final val = await req.get(this.validateCookieUrl,
+  //         headers: {'Content-Type': 'application/json', 'cookie': this.cookie});
+  //     if (val.statusCode == 200) {
+  //       return true;
+  //     } else {
+  //       await this.setNewInfo();
+  //       return await this.login(this.userName, this.pass, null);
+  //     }
+  //   } catch (err) {
+  //     print('Failure in validate cookie function: $err');
+  //     return false;
+  //   }
+  // }
 }

@@ -7,7 +7,10 @@ class BillTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(15),
-      child: Text(this.text, style: TextStyle(fontSize: 18)),
+      child: Text(
+        this.text,
+        style: TextStyle(fontSize: 18),
+      ),
     );
   }
 }

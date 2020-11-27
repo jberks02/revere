@@ -18,7 +18,7 @@ class LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(20, 20, 20, 20),
+      margin: EdgeInsets.all(20),
       height: 60,
       width: 400,
       child: FlatButton(

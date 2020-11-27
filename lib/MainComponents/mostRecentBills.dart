@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:revere/utilWidgets/failedLoad.dart';
 import '../serverRequests/dataRequests.dart';
 import '../billPageComponents/billContainer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math';
 import 'dart:convert';
+import '../utilWidgets/loadingPage.dart';
+import '../utilWidgets/failedLoad.dart';
 
 class MostRecentActions extends StatefulWidget {
   @override
@@ -14,8 +16,8 @@ class _MostRecentActionsState extends State<MostRecentActions> {
   final requestTools = Requests();
   List bills;
   bool loading = true;
+  bool failed = false;
   bool addingToList = false;
-  int initialScrollOffset = 0;
   static ScrollController _controller;
 
   _MostRecentActionsState() {
@@ -26,19 +28,19 @@ class _MostRecentActionsState extends State<MostRecentActions> {
     var prefs = await SharedPreferences.getInstance();
     double off = prefs.getDouble('listIndex');
     if (off == null) {
-      _controller = new ScrollController(initialScrollOffset: 0.00);
+      _controller = new ScrollController(
+          initialScrollOffset: 0.00, keepScrollOffset: true);
     } else {
-      _controller = new ScrollController(initialScrollOffset: off);
+      _controller = new ScrollController(
+          initialScrollOffset: off, keepScrollOffset: true);
     }
     _controller.addListener(listen);
   }
 
   void listen() async {
     var prefs = await SharedPreferences.getInstance();
-    double off = prefs.getDouble('listIndex');
-    if (off == null) {
-      prefs.setDouble('listIndex', 0.00);
-      off = 0.00;
+    if (_controller.offset < -90.00 && this.loading == false) {
+      this.getBeginningOfList(prefs);
     } else {
       prefs.setDouble('listIndex', _controller.offset);
     }
@@ -46,22 +48,14 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   initializePage() async {
     try {
+      failed = false;
       var prefs = await SharedPreferences.getInstance();
       String initialBillString = prefs.getString('ActionList');
-      String initialUpdateString = prefs.getString('ActionUpdateDate');
-      DateTime today = new DateTime.now();
-      DateTime lastLoad = initialUpdateString == null
-          ? null
-          : DateTime.parse(initialUpdateString);
-      if (initialBillString == null ||
-          today.day > lastLoad.day && today.month != lastLoad.month) {
+      if (initialBillString == null) {
         this.getBeginningOfList(prefs);
       } else {
         setState(() {
           this.bills = jsonDecode(initialBillString);
-          this.initialScrollOffset = prefs.getDouble('listIndex') == null
-              ? 0
-              : prefs.getDouble('listIndex');
           loading = false;
         });
       }
@@ -74,15 +68,26 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   getBeginningOfList(prefs) async {
     try {
-      final billList = await this.requestTools.mostRecentBills('mostrecent');
-      prefs.setString('ActionList', jsonEncode(billList));
-      prefs.setString('ActionUpdateDate', DateTime.now().toString());
-      prefs.getDouble('listIndex');
-      setState(() {
-        this.bills = billList;
-        this.initialScrollOffset = 0;
-        loading = false;
+      print('begginning of list');
+      this.setState(() {
+        loading = true;
+        this.bills = null;
       });
+      prefs.setString('ActionList', null);
+      final billList = await this.requestTools.mostRecentBills('mostrecent');
+      if (billList == false) {
+        setState(() {
+          loading = false;
+          failed = true;
+        });
+      } else {
+        prefs.setString('ActionList', jsonEncode(billList));
+        prefs.setString('ActionUpdateDate', DateTime.now().toString());
+        setState(() {
+          this.bills = billList;
+          loading = false;
+        });
+      }
     } catch (err) {
       print('Failure to start page for Actions: $err');
     }
@@ -109,18 +114,15 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   saveBill(billToUpdate) async {
     try {
-      bool save = await this.requestTools.saveBillById(billToUpdate);
-      if (save == false) {
-        return false;
-      } else {
-        for (var bill in bills) {
-          if (bill['bill_id'] == billToUpdate) {
-            bill['saved'] = true;
-          }
+      final prefs = await SharedPreferences.getInstance();
+      await this.requestTools.saveBillById(billToUpdate);
+      bills.forEach((bill) {
+        if (bill['bill_id'] == billToUpdate) {
+          bill['saved'] = true;
         }
-        setState(() {});
-        return true;
-      }
+      });
+      prefs.setString('ActionList', jsonEncode(this.bills));
+      return true;
     } catch (err) {
       print('Failure to save bill: $err');
       return false;
@@ -129,17 +131,15 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   deleteBill(billToUpdate) async {
     try {
-      final remove = await this.requestTools.deleteBillFromSave(billToUpdate);
-      if (remove != false) {
-        bills.forEach((bi) {
-          if (bi['bill_id'] == billToUpdate) {
-            bi['saved'] = false;
-          }
-        });
-        setState(() {});
-        return true;
-      } else
-        return false;
+      final prefs = await SharedPreferences.getInstance();
+      await this.requestTools.deleteBillFromSave(billToUpdate);
+      bills.forEach((bi) {
+        if (bi['bill_id'] == billToUpdate) {
+          bi['saved'] = false;
+        }
+      });
+      prefs.setString('ActionList', jsonEncode(this.bills));
+      return true;
     } catch (err) {
       print('Failure to delete bill from favorites $err');
       return false;
@@ -148,15 +148,15 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading == true) {
-      return Text('Loading...');
+    if (failed == true) {
+      return FailedLoad(reload: this.initializePage);
+    } else if (loading == true || this.bills == null) {
+      return LoadingPage();
     } else {
       return Scrollbar(
         child: ListView.builder(
-            itemCount: bills.length,
-            key: ValueKey<int>(Random(DateTime.now().millisecondsSinceEpoch)
-                .nextInt(4294967296)),
             controller: _controller,
+            itemCount: bills.length,
             itemBuilder: (context, index) {
               if (index > bills.length - 6 && addingToList == false)
                 this.getNextSeries();

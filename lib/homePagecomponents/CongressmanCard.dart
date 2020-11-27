@@ -52,8 +52,3 @@ class CongressManCard extends StatelessWidget {
     );
   }
 }
-
-// Text(
-//             this.info['title'],
-//             textAlign: TextAlign.center,
-//           ),
