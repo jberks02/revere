@@ -35,7 +35,6 @@ class _BillInfoExpandableState extends State<BillInfoExpandable> {
         border: Border.all(width: 2, color: Colors.black54),
       ),
       child: Column(
-        // children: [
         children: this.expanded == false
             ? [
                 FlatButton(

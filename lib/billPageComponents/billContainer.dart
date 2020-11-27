@@ -92,7 +92,7 @@ class _BillExpandableContainerState extends State<BillExpandableContainer> {
           BillTitle(
             text: data['title'],
           ),
-          Text(this.middleText != null ? this.middleText : '',
+          Text("Action: ${data['action_id']}",
               style: TextStyle(
                   fontSize: 20, decoration: TextDecoration.underline)),
           BillTitle(text: data['description']),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:revere/utilWidgets/failedLoad.dart';
 import '../serverRequests/dataRequests.dart';
 import '../billPageComponents/billContainer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math';
 import 'dart:convert';
+import '../utilWidgets/loadingPage.dart';
+import '../utilWidgets/failedLoad.dart';
 
 class MostRecentActions extends StatefulWidget {
   @override
@@ -14,6 +16,7 @@ class _MostRecentActionsState extends State<MostRecentActions> {
   final requestTools = Requests();
   List bills;
   bool loading = true;
+  bool failed = false;
   bool addingToList = false;
   static ScrollController _controller;
 
@@ -38,9 +41,6 @@ class _MostRecentActionsState extends State<MostRecentActions> {
     var prefs = await SharedPreferences.getInstance();
     if (_controller.offset < -90.00 && this.loading == false) {
       this.getBeginningOfList(prefs);
-      this.setState(() {
-        this.loading = true;
-      });
     } else {
       prefs.setDouble('listIndex', _controller.offset);
     }
@@ -48,6 +48,7 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   initializePage() async {
     try {
+      failed = false;
       var prefs = await SharedPreferences.getInstance();
       String initialBillString = prefs.getString('ActionList');
       if (initialBillString == null) {
@@ -70,14 +71,23 @@ class _MostRecentActionsState extends State<MostRecentActions> {
       print('begginning of list');
       this.setState(() {
         loading = true;
+        this.bills = null;
       });
+      prefs.setString('ActionList', null);
       final billList = await this.requestTools.mostRecentBills('mostrecent');
-      prefs.setString('ActionList', jsonEncode(billList));
-      prefs.setString('ActionUpdateDate', DateTime.now().toString());
-      setState(() {
-        this.bills = billList;
-        loading = false;
-      });
+      if (billList == false) {
+        setState(() {
+          loading = false;
+          failed = true;
+        });
+      } else {
+        prefs.setString('ActionList', jsonEncode(billList));
+        prefs.setString('ActionUpdateDate', DateTime.now().toString());
+        setState(() {
+          this.bills = billList;
+          loading = false;
+        });
+      }
     } catch (err) {
       print('Failure to start page for Actions: $err');
     }
@@ -138,15 +148,16 @@ class _MostRecentActionsState extends State<MostRecentActions> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading == true) {
-      return Text('Loading...');
+    if (failed == true) {
+      return FailedLoad(reload: this.initializePage);
+    } else if (loading == true || this.bills == null) {
+      return LoadingPage();
     } else {
       return Scrollbar(
         child: ListView.builder(
             controller: _controller,
             itemCount: bills.length,
             itemBuilder: (context, index) {
-              print('saved or deleted : $index');
               if (index > bills.length - 6 && addingToList == false)
                 this.getNextSeries();
               if (index == 0) {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../serverRequests/dataRequests.dart';
 import '../savedBillsComponents/savedBillsContainer.dart';
+import '../utilWidgets/loadingPage.dart';
+import '../utilWidgets/failedLoad.dart';
 
 class SavedBills extends StatefulWidget {
   @override
@@ -12,6 +14,7 @@ class _SavedBillsState extends State<SavedBills> {
   bool loading = true;
   bool failed = false;
   final Function treeReq = Requests().userTree;
+  final Function deleteBill = Requests().deleteBillFromSave;
   final sharedPrefs = SharedPreferences.getInstance();
   List data;
   static ScrollController _controller;
@@ -38,6 +41,17 @@ class _SavedBillsState extends State<SavedBills> {
     }
   }
 
+  void deleteSwipedBill(billID, index) async {
+    try {
+      await this.deleteBill(billID);
+      this.setState(() {
+        data.removeAt(index);
+      });
+    } catch (err) {
+      print('Failure to delete bill from favorites in Saved Bills: $err');
+    }
+  }
+
   listen() async {
     try {
       final prefs = await sharedPrefs;
@@ -55,17 +69,34 @@ class _SavedBillsState extends State<SavedBills> {
 
   @override
   Widget build(BuildContext context) {
-    if (failed == true) return Text('Failed...');
-    if (loading == true) {
-      return Text('Loading...');
-    }
+    if (failed == true) return FailedLoad(reload: this.initializeUserTree);
+    if (loading == true) return LoadingPage();
     return Scrollbar(
         controller: ScrollController(keepScrollOffset: true),
         child: ListView.builder(
           itemCount: data.length,
           controller: _controller,
           itemBuilder: (context, index) {
-            return BillInfoExpandable(bill: data[index]);
+            return Dismissible(
+              key: Key(data[index]['bill_id']),
+              onDismissed: (direction) {
+                this.deleteSwipedBill(data[index]['bill_id'], index);
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.black,
+                    content: Text(
+                        "${data[index]['bill_id']} removed from saved bills",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20, color: Colors.white)),
+                  ),
+                );
+              },
+              background: Container(color: Colors.grey),
+              // child: ListTile(title: Text('$data')),
+              child: BillInfoExpandable(
+                bill: data[index],
+              ),
+            );
           },
         ));
   }

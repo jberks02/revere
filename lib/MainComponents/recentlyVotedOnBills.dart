@@ -3,6 +3,8 @@ import '../serverRequests/dataRequests.dart';
 import '../billVotesComponents/votesContainer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import '../utilWidgets/loadingPage.dart';
+import '../utilWidgets/failedLoad.dart';
 
 class MostRecentVotesMain extends StatefulWidget {
   @override
@@ -14,6 +16,7 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
   List bills;
   bool loading = true;
   bool error = false;
+  bool failed = false;
   bool addingToList = false;
   static ScrollController _controller;
   _MostRecentVotesMainState() {
@@ -37,6 +40,7 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
 
   initializePage() async {
     try {
+      failed = false;
       var prefs = await SharedPreferences.getInstance();
       var list = prefs.getString('votedList');
       if (list == null) {
@@ -55,6 +59,9 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
 
     } catch (err) {
       print('failure to initialize most recent votes $err');
+      setState(() {
+        failed = true;
+      });
     }
   }
 
@@ -137,9 +144,11 @@ class _MostRecentVotesMainState extends State<MostRecentVotesMain> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading == true) {
-      return Text('Loading...');
-    } else {
+    if (failed == true)
+      return FailedLoad(reload: this.resetListToBeginning);
+    else if (loading == true)
+      return LoadingPage();
+    else {
       return Scrollbar(
         child: ListView.builder(
             itemCount: bills.length,

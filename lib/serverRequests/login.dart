@@ -51,7 +51,8 @@ class UserInformation extends UrlContainer {
         await save.setString('email', bod['email']);
         await save.setString('state', bod['state']);
         await save.setString('page', 'Vigil');
-        await this.newPage('Vigil', null);
+        if (save.getStringList('pageHistory') == null)
+          await this.newPage('Vigil', null);
         if (pick != null) {
           pick(() {
             this.setNewInfo();
@@ -135,14 +136,11 @@ class UserInformation extends UrlContainer {
   newPage(page, cycle) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      // await this.handlePageHistory(page, true);
       List<String> pageHistory = prefs.getStringList('pageHistory');
       if (pageHistory == null) pageHistory = [];
       if (page == 'Vigil') pageHistory = ['Vigil'];
-
       pageHistory.add(page);
       final toWrite = pageHistory.toSet().toList();
-      print('list to write: $toWrite');
       prefs.setStringList('pageHistory', toWrite);
       prefs.setString('page', page);
       if (cycle != null) {

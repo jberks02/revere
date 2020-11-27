@@ -21,7 +21,6 @@ class _LeadingDropDownState extends State<LeadingDropDown> {
     try {
       final prefs = await SharedPreferences.getInstance();
       bool logged = prefs.getBool('logged');
-      print("page name in drop down: $val");
       if (logged == true) {
         if (val == 'Logout')
           this.logout(this.cycle);
@@ -33,7 +32,6 @@ class _LeadingDropDownState extends State<LeadingDropDown> {
     }
   }
 
-//TODO: Debug issue where going to the saved bills page clears all history and makes back button useless
   @override
   Widget build(BuildContext context) {
     return ButtonTheme(
@@ -46,6 +44,7 @@ class _LeadingDropDownState extends State<LeadingDropDown> {
           return [
             PopupMenuItem(child: Text('Saved Bills'), value: "Saved Bills"),
             PopupMenuItem(child: Text('Profile'), value: 'Profile'),
+            PopupMenuItem(child: Text('Credits'), value: 'Credits'),
             PopupMenuItem(child: Text('Logout'), value: "Logout")
           ];
         },
